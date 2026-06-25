@@ -1,4 +1,16 @@
-config.js
-.env.local
+# Global
 .DS_Store
-node_modules/
+*.log
+.idea/
+*.swp
+
+# Backend
+backend/node_modules/
+backend/.env.local
+
+# Frontend
+frontend/node_modules/
+frontend/.env.local
+
+# Vercel
+.vercel/

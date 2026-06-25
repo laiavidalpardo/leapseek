@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Legal — Leapseek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green: #3DD68C; --green-dk: #28B874;
+  --bg: #F7FBF9; --white: #ffffff;
+  --border: #D6EDE3; --text: #0E1A14; --muted: #6B8F7A;
+  --surface: #EEF7F2;
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 60px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.5rem;
+  background: rgba(247,251,249,0.9); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+.logo svg { width:30px; height:30px; }
+.logo-text { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; color:var(--text); letter-spacing:.5px; text-transform:uppercase; }
+
+.tabs-nav {
+  position: sticky; top: 60px; z-index: 50;
+  background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-link {
+  padding: .875rem 1.5rem; font-size: .875rem; font-weight: 500;
+  color: var(--muted); text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: color .2s, border-color .2s;
+}
+.tab-link:hover { color: var(--text); }
+.tab-link.active { color: var(--green-dk); border-bottom-color: var(--green); }
+
+main { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+
+.section { display: none; padding-top: 1rem; }
+.section.active { display: block; }
+
+.section-header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+.section-header h1 { font-family:'Syne',sans-serif; font-weight:800; font-size: clamp(1.6rem,3vw,2.2rem); letter-spacing:-.02em; margin-bottom:.5rem; }
+.section-header p { color: var(--muted); font-size: .875rem; font-weight: 300; }
+
+h2 { font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; margin: 2rem 0 .75rem; color: var(--text); }
+h3 { font-size:.95rem; font-weight:600; margin: 1.5rem 0 .5rem; }
+p { font-size:.9rem; color: var(--text); line-height:1.8; font-weight:300; margin-bottom:.75rem; }
+ul, ol { padding-left: 1.25rem; margin-bottom:.75rem; }
+li { font-size:.9rem; line-height:1.8; font-weight:300; margin-bottom:.25rem; }
+a { color: var(--green-dk); text-decoration:none; }
+a:hover { text-decoration: underline; }
+
+.highlight {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.25rem; margin: 1.5rem 0;
+}
+.highlight p { margin: 0; font-size:.875rem; }
+
+.tag {
+  display:inline-block; background: rgba(61,214,140,.12); color: var(--green-dk);
+  font-size:.72rem; font-weight:600; padding: 3px 10px; border-radius:100px;
+  text-transform:uppercase; letter-spacing:.06em; margin-bottom:.75rem;
+}
+
+.rights-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap:.75rem; margin: 1rem 0;
+}
+.right-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem;
+}
+.right-item h4 { font-size:.875rem; font-weight:600; margin-bottom:.3rem; }
+.right-item p { font-size:.8rem; margin:0; color: var(--muted); }
+
+.cookie-table { width:100%; border-collapse:collapse; margin: 1rem 0; font-size:.85rem; }
+.cookie-table th { background: var(--surface); padding:.6rem .875rem; text-align:left; font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; border: 1px solid var(--border); }
+.cookie-table td { padding:.6rem .875rem; border: 1px solid var(--border); vertical-align:top; font-weight:300; line-height:1.6; }
+.cookie-table tr:nth-child(even) td { background: var(--bg); }
+
+.update-date { font-size:.78rem; color: var(--muted); margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <svg viewBox="0 0 100 100" fill="none"><rect width="100" height="100" rx="18" fill="#3DD68C"/><rect x="0" y="35" width="48" height="65" fill="white"/><rect x="0" y="70" width="66" height="30" fill="white"/><rect x="6" y="41" width="34" height="59" fill="#0E1A14"/><rect x="6" y="76" width="52" height="24" fill="#0E1A14"/><rect x="40" y="70" width="26" height="6" fill="white"/></svg>
+    <span class="logo-text">Leapseek</span>
+  </a>
+</nav>
+
+<div class="tabs-nav" style="margin-top:60px;">
+  <a href="#privacidad" class="tab-link active" onclick="showTab('privacidad',this)">Política de privacidad</a>
+  <a href="#terminos" class="tab-link" onclick="showTab('terminos',this)">Términos y condiciones</a>
+  <a href="#cookies" class="tab-link" onclick="showTab('cookies',this)">Política de cookies</a>
+</div>
+
+<main>
+
+  <!-- PRIVACIDAD -->
+  <div class="section active" id="privacidad">
+    <div class="section-header">
+      <div class="tag">RGPD Compliant</div>
+      <h1>Política de privacidad</h1>
+      <p>Última actualización: junio de 2026</p>
+    </div>
+
+    <div class="highlight">
+      <p>📄 <strong>Importante:</strong> Leapseek <strong>no almacena tu CV</strong> en ningún servidor. Tu documento se procesa en el momento y se descarta inmediatamente. Nunca guardamos ni vendemos tus datos personales.</p>
+    </div>
+
+    <h2>1. Responsable del tratamiento</h2>
+    <p>El responsable del tratamiento de tus datos personales es <strong>Leapseek</strong>, contactable a través de <a href="mailto:hola@leapseek.com">hola@leapseek.com</a>.</p>
+
+    <h2>2. Qué datos recopilamos</h2>
+    <p>Leapseek recopila únicamente los datos estrictamente necesarios para prestar el servicio:</p>
+    <ul>
+      <li><strong>Datos de uso:</strong> número de adaptaciones realizadas, guardado localmente en tu navegador (localStorage). No se envía a ningún servidor nuestro.</li>
+      <li><strong>Contenido del CV:</strong> el texto de tu CV se envía de forma cifrada a la API de Anthropic para su procesamiento. No lo almacenamos.</li>
+      <li><strong>URL de la oferta:</strong> el link que introduces se usa únicamente para analizar la oferta. No lo almacenamos.</li>
+      <li><strong>Datos de pago</strong> (planes de pago): gestionados íntegramente por Stripe. Leapseek nunca accede a tus datos de tarjeta.</li>
+      <li><strong>Email</strong> (planes de pago): necesario para gestionar tu cuenta y enviarte facturas.</li>
+    </ul>
+
+    <h2>3. Finalidad del tratamiento</h2>
+    <ul>
+      <li>Prestación del servicio de optimización de CV</li>
+      <li>Gestión de suscripciones y pagos</li>
+      <li>Comunicaciones relacionadas con el servicio (no publicidad no solicitada)</li>
+      <li>Cumplimiento de obligaciones legales</li>
+    </ul>
+
+    <h2>4. Base legal</h2>
+    <p>El tratamiento de tus datos se basa en la ejecución del contrato de servicio (Art. 6.1.b RGPD) y, en su caso, en tu consentimiento expreso (Art. 6.1.a RGPD).</p>
+
+    <h2>5. Conservación de datos</h2>
+    <p>Los datos de cuenta se conservan mientras mantengas una cuenta activa en Leapseek y durante el plazo legalmente exigido tras la cancelación (máximo 5 años por obligaciones fiscales). Los CVs y URLs procesados <strong>no se almacenan</strong> en ningún momento.</p>
+
+    <h2>6. Destinatarios</h2>
+    <p>Tus datos pueden ser tratados por los siguientes proveedores de confianza, únicamente para prestar el servicio:</p>
+    <ul>
+      <li><strong>Anthropic:</strong> procesamiento de IA para optimización del CV. <a href="https://www.anthropic.com/privacy" target="_blank">Ver su política de privacidad</a></li>
+      <li><strong>Stripe:</strong> gestión de pagos. <a href="https://stripe.com/es/privacy" target="_blank">Ver su política de privacidad</a></li>
+      <li><strong>Netlify:</strong> alojamiento web. <a href="https://www.netlify.com/privacy/" target="_blank">Ver su política de privacidad</a></li>
+    </ul>
+    <p>No vendemos ni cedemos tus datos a terceros con fines comerciales.</p>
+
+    <h2>7. Tus derechos</h2>
+    <div class="rights-grid">
+      <div class="right-item"><h4>Acceso</h4><p>Solicitar una copia de tus datos personales</p></div>
+      <div class="right-item"><h4>Rectificación</h4><p>Corregir datos inexactos o incompletos</p></div>
+      <div class="right-item"><h4>Supresión</h4><p>Solicitar la eliminación de tus datos</p></div>
+      <div class="right-item"><h4>Portabilidad</h4><p>Recibir tus datos en formato estructurado</p></div>
+      <div class="right-item"><h4>Limitación</h4><p>Restringir el tratamiento de tus datos</p></div>
+      <div class="right-item"><h4>Oposición</h4><p>Oponerte al tratamiento en ciertos casos</p></div>
+    </div>
+    <p>Para ejercer cualquiera de estos derechos, escríbenos a <a href="mailto:hola@leapseek.com">hola@leapseek.com</a>. Responderemos en un plazo máximo de 30 días. También puedes presentar una reclamación ante la <a href="https://www.aepd.es" target="_blank">Agencia Española de Protección de Datos (AEPD)</a>.</p>
+
+    <h2>8. Seguridad</h2>
+    <p>Todas las comunicaciones entre tu navegador y nuestros servicios están cifradas mediante HTTPS/TLS. No almacenamos CVs ni datos sensibles en nuestros servidores, lo que minimiza significativamente los riesgos de seguridad.</p>
+
+    <p class="update-date">Documento actualizado en junio de 2026. Cualquier cambio significativo te será notificado por email si dispones de cuenta registrada.</p>
+  </div>
+
+  <!-- TÉRMINOS -->
+  <div class="section" id="terminos">
+    <div class="section-header">
+      <div class="tag">Términos legales</div>
+      <h1>Términos y condiciones</h1>
+      <p>Última actualización: junio de 2026</p>
+    </div>
+
+    <h2>1. Descripción del servicio</h2>
+    <p>Leapseek es una plataforma web que utiliza inteligencia artificial para optimizar CVs y preparar entrevistas de trabajo. El servicio está disponible en <strong>leapseek.netlify.app</strong>.</p>
+
+    <h2>2. Aceptación de los términos</h2>
+    <p>El uso de Leapseek implica la aceptación plena de estos términos. Si no estás de acuerdo, debes abstenerte de usar el servicio.</p>
+
+    <h2>3. Planes y precios</h2>
+    <h3>Plan Gratuito</h3>
+    <ul>
+      <li>3 adaptaciones de CV al mes</li>
+      <li>Score ATS y palabras clave detectadas</li>
+      <li>Sin necesidad de cuenta ni tarjeta de crédito</li>
+    </ul>
+    <h3>Plan Pro — 7€/mes o 59€/año</h3>
+    <ul>
+      <li>Adaptaciones de CV ilimitadas</li>
+      <li>Carta de presentación incluida</li>
+      <li>3 simulacros de entrevista con IA al mes + feedback resumido</li>
+      <li>Preparación básica de entrevista</li>
+      <li>Historial de CVs</li>
+    </ul>
+    <h3>Plan Élite — 14€/mes o 99€/año</h3>
+    <ul>
+      <li>Todo lo incluido en Pro</li>
+      <li>Simulacros de entrevista ilimitados*</li>
+      <li>Preparación completa y feedback detallado</li>
+      <li>Informe completo de empresa</li>
+      <li>Soporte prioritario</li>
+    </ul>
+
+    <div class="highlight">
+      <p>* <strong>Política de uso razonable:</strong> El plan Élite incluye simulacros de entrevista "ilimitados" sujetos a un uso razonable. Leapseek se reserva el derecho de limitar o suspender cuentas que presenten un uso anormalmente elevado que pueda perjudicar a otros usuarios o suponga un abuso del servicio. Se considera uso razonable un máximo orientativo de 50 simulacros al mes.</p>
+    </div>
+
+    <h2>4. Pagos y cancelación</h2>
+    <ul>
+      <li>Los pagos se procesan de forma segura a través de Stripe</li>
+      <li>Las suscripciones se renuevan automáticamente al final de cada período</li>
+      <li>Puedes cancelar en cualquier momento desde tu área de cuenta</li>
+      <li>Al cancelar, mantienes acceso hasta el final del período pagado</li>
+      <li>No se realizan reembolsos por períodos parciales salvo obligación legal</li>
+    </ul>
+
+    <h2>5. Uso permitido</h2>
+    <p>Te comprometes a utilizar Leapseek únicamente para fines legítimos de búsqueda de empleo. Queda expresamente prohibido:</p>
+    <ul>
+      <li>Usar el servicio para crear CVs con información falsa o fraudulenta</li>
+      <li>Intentar acceder a cuentas de otros usuarios</li>
+      <li>Realizar ingeniería inversa o copiar el sistema de IA</li>
+      <li>Usar el servicio de forma automatizada masiva sin autorización</li>
+      <li>Revender o sublicenciar el acceso al servicio</li>
+    </ul>
+
+    <h2>6. Propiedad intelectual</h2>
+    <p>El contenido que generas con Leapseek (tu CV optimizado, carta de presentación) es tuyo. Leapseek no reclama ningún derecho sobre los documentos generados a partir de tu información personal.</p>
+    <p>La plataforma, el diseño, los algoritmos y el código de Leapseek son propiedad exclusiva de Leapseek y están protegidos por la legislación de propiedad intelectual.</p>
+
+    <h2>7. Limitación de responsabilidad</h2>
+    <p>Leapseek no garantiza que el uso del servicio resulte en la obtención de entrevistas o empleo. La optimización de CVs aumenta las probabilidades de superar filtros ATS pero el resultado final depende de múltiples factores fuera de nuestro control.</p>
+    <p>La responsabilidad máxima de Leapseek ante cualquier reclamación se limita al importe abonado por el usuario en los últimos 3 meses.</p>
+
+    <h2>8. Modificaciones del servicio</h2>
+    <p>Leapseek se reserva el derecho de modificar, suspender o discontinuar el servicio con un preaviso razonable. Los cambios de precio se comunicarán con al menos 30 días de antelación a los usuarios con suscripción activa.</p>
+
+    <h2>9. Ley aplicable</h2>
+    <p>Estos términos se rigen por la legislación española. Cualquier disputa se someterá a los juzgados y tribunales de España.</p>
+
+    <p class="update-date">Versión vigente desde junio de 2026.</p>
+  </div>
+
+  <!-- COOKIES -->
+  <div class="section" id="cookies">
+    <div class="section-header">
+      <div class="tag">Cookies</div>
+      <h1>Política de cookies</h1>
+      <p>Última actualización: junio de 2026</p>
+    </div>
+
+    <div class="highlight">
+      <p>🍪 <strong>Buenas noticias:</strong> Leapseek usa muy pocas cookies. No utilizamos cookies de seguimiento publicitario ni compartimos datos con redes publicitarias de terceros.</p>
+    </div>
+
+    <h2>¿Qué son las cookies?</h2>
+    <p>Las cookies son pequeños archivos de texto que los sitios web almacenan en tu navegador para recordar información entre visitas. En Leapseek usamos una tecnología similar llamada <strong>localStorage</strong>, que funciona solo en tu dispositivo y no se transmite a ningún servidor externo.</p>
+
+    <h2>Qué almacenamos en tu navegador</h2>
+    <table class="cookie-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th>Finalidad</th>
+          <th>Duración</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>ls_uses</code></td>
+          <td>localStorage</td>
+          <td>Contador de adaptaciones gratuitas usadas (máx. 3). Solo se almacena en tu navegador, no en nuestros servidores.</td>
+          <td>Hasta que borres los datos del navegador</td>
+        </tr>
+        <tr>
+          <td>Sesión de usuario</td>
+          <td>Cookie de sesión</td>
+          <td>Mantener tu sesión iniciada en los planes de pago (cuando esté disponible)</td>
+          <td>Duración de la sesión</td>
+        </tr>
+        <tr>
+          <td>Stripe</td>
+          <td>Cookie de tercero</td>
+          <td>Procesamiento seguro de pagos. Solo activo durante el proceso de compra.</td>
+          <td>Sesión de pago</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Lo que NO hacemos</h2>
+    <ul>
+      <li>No usamos Google Analytics ni ninguna herramienta de seguimiento de comportamiento</li>
+      <li>No instalamos cookies publicitarias</li>
+      <li>No compartimos datos de navegación con terceros</li>
+      <li>No rastreamos tu actividad fuera de Leapseek</li>
+    </ul>
+
+    <h2>Cómo gestionar las cookies</h2>
+    <p>Puedes eliminar los datos almacenados por Leapseek en cualquier momento desde la configuración de tu navegador:</p>
+    <ul>
+      <li><strong>Chrome:</strong> Configuración → Privacidad y seguridad → Borrar datos de navegación</li>
+      <li><strong>Firefox:</strong> Preferencias → Privacidad y seguridad → Cookies y datos del sitio</li>
+      <li><strong>Safari:</strong> Preferencias → Privacidad → Gestionar datos de sitios web</li>
+    </ul>
+    <p>Ten en cuenta que al borrar el localStorage de Leapseek, el contador de usos gratuitos se reiniciará.</p>
+
+    <h2>Contacto</h2>
+    <p>Si tienes preguntas sobre nuestra política de cookies, escríbenos a <a href="mailto:hola@leapseek.com">hola@leapseek.com</a>.</p>
+
+    <p class="update-date">Versión vigente desde junio de 2026.</p>
+  </div>
+
+</main>
+
+<script>
+function showTab(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  return false;
+}
+
+const hash = window.location.hash.replace('#','');
+if (hash && document.getElementById(hash)) {
+  showTab(hash, document.querySelector(`[href="#${hash}"]`));
+}
+</script>
+</body>
+</html>

@@ -49,33 +49,15 @@ async function generateOptimizedPDF(resultData) {
 
     function gap(px = 8) { y -= px; }
 
-    // Título
-    drawText('CV OPTIMIZADO PARA ATS', { size: 16, bold: true, color: GREEN });
-    gap();
-
-    // Scores
-    const scoreBefore = resultData.score_antes || 0;
-    const scoreAfter = resultData.score_despues || 0;
-    drawText(`Compatibilidad antes: ${scoreBefore}%`, { size: 12, bold: true });
-    drawText(`Compatibilidad después: ${scoreAfter}%`, { size: 12, bold: true, color: GREEN });
-    gap();
-
-    // Keywords
-    if (resultData.keywords && resultData.keywords.length > 0) {
-      drawText('PALABRAS CLAVE DETECTADAS:', { size: 12, bold: true });
-      drawText(resultData.keywords.slice(0, 8).join('  ·  '), { size: 10 });
-      gap();
-    }
-
-    // CV optimizado
-    drawText('CV OPTIMIZADO:', { size: 12, bold: true });
+    // CV optimizado — solo el contenido, sin métricas ATS
     if (resultData.cv_optimizado) {
       const lines = resultData.cv_optimizado.split('\n');
       for (const line of lines) {
         if (line.trim() === '') {
           gap(6);
         } else {
-          drawText(line, { size: 10 });
+          const isSectionHeader = line.trim() === line.trim().toUpperCase() && line.trim().length > 2;
+          drawText(line, { size: isSectionHeader ? 12 : 10, bold: isSectionHeader });
         }
       }
     }

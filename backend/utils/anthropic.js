@@ -78,7 +78,7 @@ async function optimizeCV(cvText, jobText, isPro = false, model = 'claude-haiku-
 
   const response = await client.messages.create({
     model,
-    max_tokens: 2000,
+    max_tokens: 8000,
     temperature: 0,
     system: systemPrompt,
     messages: [{

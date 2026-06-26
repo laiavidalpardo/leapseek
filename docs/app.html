@@ -553,6 +553,14 @@ async function optimize() {
     resultData = await response.json();
     pdfBase64 = resultData.pdf_base64;
 
+    // Perfil incompatible con la oferta
+    if (resultData.incompatible) {
+      document.getElementById('processing').classList.remove('show');
+      document.getElementById('upload-section').style.display = 'block';
+      showError('Tu perfil no encaja con esta oferta. ' + (resultData.aviso || ''));
+      return;
+    }
+
     // Render results
     document.getElementById('score-before').textContent = (resultData.score_antes || 0) + '%';
     document.getElementById('score-after').textContent = (resultData.score_despues || 0) + '%';

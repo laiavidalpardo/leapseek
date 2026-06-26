@@ -23,12 +23,29 @@ PASO 3 — SCORE ANTES:
 Calcula el score ATS del CV original (0-100). Sé realista y estricto.
 
 PASO 4 — OPTIMIZACIÓN AGRESIVA DEL CV:
-Reescribe el CV completo maximizando el score ATS:
-- Incorpora TODAS las keywords relevantes de forma natural
-- Usa el título exacto del puesto en el CV
-- Cuantifica logros con números cuando sea posible
-- Ordena secciones para destacar lo más relevante para esa oferta
+Reescribe el CV completo siguiendo estas reglas estrictas:
+
+ESTRUCTURA (en este orden exacto):
+1. NOMBRE COMPLETO (en mayúsculas)
+2. Línea de contacto: Ciudad, País · Teléfono · Email · LinkedIn (si existe)
+3. RESUMEN PROFESIONAL (3-5 líneas, con keywords de la oferta)
+4. HABILIDADES TÉCNICAS (inmediatamente después del resumen, NO al final)
+5. EXPERIENCIA (orden cronológico inverso)
+6. EDUCACIÓN
+7. IDIOMAS
+
+REGLAS DE CONTENIDO:
+- USA el título exacto del puesto de la oferta en el resumen
+- ELIMINA: fecha de nacimiento, dirección completa (solo ciudad/país), carnet de conducir (salvo que la oferta lo pida), foto
+- ELIMINA: descripciones de la empresa debajo de cada trabajo
+- ELIMINA: secciones de "Competencias" o "Soft Skills" genéricas — integra lo relevante en el resumen
+- BULLET POINTS: máximo 2 líneas cada uno, empezar con verbo de acción, cuantificar logros con números siempre que sea posible
+- HABILIDADES: formato lista limpia separada por comas o con · no párrafos largos
+- FECHAS: formato consistente (ej: "Enero 2020 – Presente" o "Jan 2020 – Present")
+- ACRÓNIMOS: la primera vez escribe el nombre completo seguido del acrónimo entre paréntesis (ej: "Software-in-the-Loop (SiL)")
+- LONGITUD: máximo 2 páginas. Prioriza calidad sobre cantidad. Elimina bullets redundantes
 - NO inventes experiencia ni habilidades que no tenga el candidato
+- Incorpora TODAS las keywords relevantes de la oferta de forma natural
 - Objetivo: llegar al 85% o más de match ATS
 
 PASO 5 — SCORE DESPUÉS:

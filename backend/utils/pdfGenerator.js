@@ -81,22 +81,23 @@ async function generateOptimizedPDF(resultData) {
     }
 
     // ── HEADER BLOCK ─────────────────────────────────────────────────
-    const headerH = 62;
-    page.drawRectangle({ x: 0, y: PAGE_H - headerH, width: PAGE_W, height: headerH, color: COLOR_DARK });
+    y = PAGE_H - MARGIN;
 
-    const nameSize = 20;
-    const nameTrimmed = name.toUpperCase();
-    page.drawText(nameTrimmed, {
-      x: MARGIN, y: PAGE_H - headerH/2 - nameSize/2,
-      size: nameSize, font: fontBold, color: COLOR_WHITE
+    const nameSize = 22;
+    page.drawText(name.toUpperCase(), {
+      x: MARGIN, y: y - nameSize,
+      size: nameSize, font: fontBold, color: COLOR_DARK
     });
+    y -= nameSize + 6;
 
-    y = PAGE_H - headerH - 12;
+    // Green underline under name
+    page.drawRectangle({ x: MARGIN, y: y, width: 40, height: 2, color: COLOR_GREEN });
+    y -= 10;
 
     // ── CONTACT LINE ─────────────────────────────────────────────────
     if (contact) {
-      page.drawText(contact, { x: MARGIN, y, size: 9, font: fontReg, color: COLOR_MUTED });
-      y -= 20;
+      page.drawText(contact, { x: MARGIN, y: y - 10, size: 9, font: fontReg, color: COLOR_MUTED });
+      y -= 22;
     }
 
     // ── SECTIONS ─────────────────────────────────────────────────────
@@ -106,7 +107,7 @@ async function generateOptimizedPDF(resultData) {
 
       // Green left bar + section title
       page.drawRectangle({ x: MARGIN, y: y - 13, width: 3, height: 14, color: COLOR_GREEN });
-      page.drawText(section.title, { x: MARGIN + 8, y: y - 12, size: 11, font: fontBold, color: COLOR_GREEN });
+      page.drawText(section.title, { x: MARGIN + 8, y: y - 12, size: 11, font: fontBold, color: COLOR_DARK });
       y -= 16;
 
       // Thin separator line

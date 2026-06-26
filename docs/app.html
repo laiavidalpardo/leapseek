@@ -399,7 +399,7 @@
 <main>
   <div class="page-header">
     <h1>Adapta tu CV a <em>cada oferta</em></h1>
-    <p>Sube tu CV y el link de la oferta. Optimizamos tu candidatura en segundos.</p>
+    <p>Sube tu CV y pega el texto de la oferta. Optimizamos tu candidatura en segundos.</p>
   </div>
 
   <!-- UPLOAD SECTION -->
@@ -418,8 +418,8 @@
     </div>
 
     <div class="input-group">
-      <label class="input-label">Link de la oferta</label>
-      <input type="url" id="job-url" class="input-text" placeholder="https://www.linkedin.com/jobs/view/...">
+      <label class="input-label">Texto de la oferta</label>
+      <textarea id="job-text" class="input-text" rows="6" placeholder="Abre la oferta de trabajo, selecciona todo el texto y pégalo aquí..."></textarea>
     </div>
 
     <button class="btn-main" id="btn-optimize" disabled>
@@ -517,19 +517,19 @@ function loadFile(file) {
   checkReady();
 }
 
-document.getElementById('job-url').addEventListener('input', checkReady);
+document.getElementById('job-text').addEventListener('input', checkReady);
 
 function checkReady() {
-  const url = document.getElementById('job-url').value.trim();
-  document.getElementById('btn-optimize').disabled = !(cvFile && url.length > 10);
+  const text = document.getElementById('job-text').value.trim();
+  document.getElementById('btn-optimize').disabled = !(cvFile && text.length > 50);
 }
 
 document.getElementById('btn-optimize').addEventListener('click', optimize);
 
 async function optimize() {
   hideError();
-  const url = document.getElementById('job-url').value.trim();
-  if (!cvFile || !url) return;
+  const jobText = document.getElementById('job-text').value.trim();
+  if (!cvFile || !jobText) return;
 
   document.getElementById('upload-section').style.display = 'none';
   document.getElementById('processing').classList.add('show');
@@ -538,7 +538,7 @@ async function optimize() {
   try {
     const formData = new FormData();
     formData.append('cv', cvFile);
-    formData.append('jobUrl', url);
+    formData.append('jobText', jobText);
 
     const response = await fetch(`${API_BASE}/optimize`, {
       method: 'POST',

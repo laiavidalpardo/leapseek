@@ -69,15 +69,14 @@ async function extractCVText(file) {
 
 router.post('/', upload.single('cv'), async (req, res) => {
   try {
-    const { jobUrl } = req.body;
+    const { jobText } = req.body;
 
-    // Validate inputs
     if (!req.file) {
       return res.status(400).json({ error: 'No CV file provided' });
     }
 
-    if (!jobUrl) {
-      return res.status(400).json({ error: 'Job URL required' });
+    if (!jobText || jobText.trim().length < 50) {
+      return res.status(400).json({ error: 'Job description too short' });
     }
 
     // Extract CV text
@@ -90,18 +89,6 @@ router.post('/', upload.single('cv'), async (req, res) => {
 
     if (cvText.length < 100) {
       return res.status(400).json({ error: 'CV too short or invalid' });
-    }
-
-    // Fetch job posting
-    let jobText;
-    try {
-      jobText = await fetchURLContent(jobUrl);
-    } catch (err) {
-      return res.status(400).json({ error: 'Could not read job URL: ' + err.message });
-    }
-
-    if (jobText.length < 100) {
-      return res.status(400).json({ error: 'Job posting too short' });
     }
 
     // Optimize CV with Anthropic

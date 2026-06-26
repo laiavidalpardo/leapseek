@@ -40,7 +40,7 @@ REGLAS DE CONTENIDO:
 - ELIMINA: descripciones de la empresa debajo de cada trabajo
 - ELIMINA: secciones de "Competencias" o "Soft Skills" genéricas — integra lo relevante en el resumen
 - BULLET POINTS: máximo 2 líneas cada uno, empezar con verbo de acción, cuantificar logros con números siempre que sea posible
-- HABILIDADES: formato lista limpia separada por comas o con · no párrafos largos
+- HABILIDADES: máximo 12 skills, los más relevantes para ESA oferta concreta. Formato lista separada por · no párrafos largos
 - FECHAS: formato consistente (ej: "Enero 2020 – Presente" o "Jan 2020 – Present")
 - ACRÓNIMOS: la primera vez escribe el nombre completo seguido del acrónimo entre paréntesis (ej: "Software-in-the-Loop (SiL)")
 - LONGITUD: máximo 2 páginas. Prioriza calidad sobre cantidad. Elimina bullets redundantes

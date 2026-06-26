@@ -73,7 +73,7 @@ El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
   return base;
 }
 
-async function optimizeCV(cvText, jobText, isPro = false, model = 'claude-3-5-haiku-20241022') {
+async function optimizeCV(cvText, jobText, isPro = false, model = 'claude-haiku-4-5-20251001') {
   const systemPrompt = buildSystemPrompt(isPro);
 
   const response = await client.messages.create({
@@ -87,7 +87,8 @@ async function optimizeCV(cvText, jobText, isPro = false, model = 'claude-3-5-ha
     }]
   });
 
-  const text = response.content[0].text;
+  let text = response.content[0].text.trim();
+  text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
   return JSON.parse(text);
 }
 

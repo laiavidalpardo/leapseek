@@ -1,90 +1,141 @@
 const express = require('express');
 const multer = require('multer');
-const auth = require('../middleware/auth');
+const axios = require('axios');
+const cheerio = require('cheerio');
 const { optimizeCV } = require('../utils/anthropic');
 const { extractTextFromPDF } = require('../utils/pdfToText');
-const supabase = require('../config/supabase');
+const { extractTextFromWord } = require('../utils/wordToText');
+const { generateOptimizedPDF } = require('../utils/pdfGenerator');
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF and Word files allowed'));
+    }
+  }
+});
 
-router.post('/', auth, upload.single('cv'), async (req, res) => {
+// Fetch URL content
+async function fetchURLContent(url) {
+  const proxies = [
+    `https://r.jina.ai/${url}`,
+    `https://corsproxy.io/?${encodeURIComponent(url)}`
+  ];
+
+  for (const proxyUrl of proxies) {
+    try {
+      const response = await axios.get(proxyUrl, {
+        timeout: 10000,
+        headers: proxyUrl.includes('r.jina.ai') ? { 'Accept': 'text/markdown' } : {}
+      });
+
+      let content = response.data;
+
+      // Clean markdown from Jina
+      if (proxyUrl.includes('r.jina.ai')) {
+        content = content.replace(/[#*\[\]()]/g, ' ').replace(/\s+/g, ' ').trim();
+      } else {
+        // Parse HTML
+        const $ = cheerio.load(content);
+        content = $('body').text().replace(/\s+/g, ' ').trim();
+      }
+
+      if (content.length > 200) {
+        return content.substring(0, 3000);
+      }
+    } catch (e) {
+      continue;
+    }
+  }
+
+  throw new Error('Could not fetch URL content');
+}
+
+// Extract CV text based on file type
+async function extractCVText(file) {
+  if (file.mimetype === 'application/pdf') {
+    return await extractTextFromPDF(file.buffer);
+  } else if (['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'].includes(file.mimetype)) {
+    return await extractTextFromWord(file.buffer);
+  }
+  throw new Error('Unsupported file format');
+}
+
+router.post('/', upload.single('cv'), async (req, res) => {
   try {
-    const { jobUrl, jobText } = req.body;
-    const userId = req.user.uid;
+    const { jobUrl } = req.body;
 
     // Validate inputs
     if (!req.file) {
       return res.status(400).json({ error: 'No CV file provided' });
     }
 
-    if (!jobText || jobText.length < 50) {
-      return res.status(400).json({ error: 'Job text too short (min 50 chars)' });
+    if (!jobUrl) {
+      return res.status(400).json({ error: 'Job URL required' });
     }
 
-    // Get user's plan
-    const { data: profile, error: profileError } = await supabase
-      .from('user_profiles')
-      .select('plan')
-      .eq('id', userId)
-      .single();
-
-    if (profileError || !profile) {
-      return res.status(400).json({ error: 'User profile not found' });
+    // Extract CV text
+    let cvText;
+    try {
+      cvText = await extractCVText(req.file);
+    } catch (err) {
+      return res.status(400).json({ error: 'Could not read CV file: ' + err.message });
     }
-
-    // Check usage limits for free tier
-    if (profile.plan === 'free') {
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-
-      const { data: usageThisMonth, error: usageError } = await supabase
-        .from('usage_logs')
-        .select('id', { count: 'exact' })
-        .eq('user_id', userId)
-        .eq('feature', 'optimize')
-        .gte('created_at', thirtyDaysAgo);
-
-      if (!usageError && usageThisMonth.length >= 1) {
-        return res.status(403).json({ error: 'Free plan limit reached. Upgrade to Pro to continue.' });
-      }
-    }
-
-    // Extract text from PDF
-    const cvText = await extractTextFromPDF(req.file.buffer);
 
     if (cvText.length < 100) {
-      return res.status(400).json({ error: 'CV text too short or invalid PDF' });
+      return res.status(400).json({ error: 'CV too short or invalid' });
     }
 
-    // Choose model based on plan
-    const model = profile.plan === 'free' ? 'claude-3-5-haiku-20241022' : 'claude-sonnet-4-20250514';
-    const isPro = profile.plan !== 'free';
+    // Fetch job posting
+    let jobText;
+    try {
+      jobText = await fetchURLContent(jobUrl);
+    } catch (err) {
+      return res.status(400).json({ error: 'Could not read job URL: ' + err.message });
+    }
 
-    // Call Anthropic
-    const result = await optimizeCV(cvText, jobText, isPro, model);
+    if (jobText.length < 100) {
+      return res.status(400).json({ error: 'Job posting too short' });
+    }
 
-    // Log usage
-    await supabase.from('usage_logs').insert({
-      user_id: userId,
-      feature: 'optimize',
-      model_used: model,
-      status: 'success',
-      cost_eur: model.includes('haiku') ? 0.02 : 0.20
+    // Optimize CV with Anthropic
+    const result = await optimizeCV(cvText, jobText, false, 'claude-haiku-4-5-20251001');
+
+    // Ensure keywords is an array of max 8
+    if (Array.isArray(result.keywords)) {
+      result.keywords = result.keywords.slice(0, 8);
+    } else {
+      result.keywords = [];
+    }
+
+    // Generate PDF
+    let pdfBuffer;
+    try {
+      pdfBuffer = await generateOptimizedPDF(result, req.file.originalname);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      // Still return result even if PDF fails
+      return res.json({
+        ...result,
+        pdf_error: 'Could not generate PDF'
+      });
+    }
+
+    // Return result with PDF as base64
+    res.json({
+      ...result,
+      pdf_base64: pdfBuffer.toString('base64'),
+      pdf_filename: 'cv_optimizado.pdf'
     });
 
-    res.json(result);
   } catch (err) {
-    console.error(err);
-
-    // Log failed attempt
-    if (req.user) {
-      await supabase.from('usage_logs').insert({
-        user_id: req.user.uid,
-        feature: 'optimize',
-        status: 'error'
-      }).catch(e => console.error('Failed to log error:', e));
-    }
-
+    console.error('Error:', err);
     res.status(400).json({ error: err.message || 'Optimization failed' });
   }
 });

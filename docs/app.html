@@ -377,6 +377,165 @@
       display: block;
     }
 
+    /* NAV AUTH */
+    .nav-auth {
+      position: absolute;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-nav {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    .btn-nav-login {
+      background: var(--green);
+      color: var(--text);
+    }
+    .btn-nav-login:hover { background: var(--green-dk); }
+    .btn-nav-user {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border) !important;
+      font-size: 0.75rem;
+    }
+    .btn-nav-user:hover { color: var(--text); }
+    .nav-email {
+      font-size: 0.78rem;
+      color: var(--muted);
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(14,26,20,0.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 380px;
+      margin: 1rem;
+    }
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      margin-bottom: 0.25rem;
+    }
+    .modal-sub {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .modal-tabs {
+      display: flex;
+      gap: 0;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 1.5rem;
+    }
+    .modal-tab {
+      flex: 1;
+      padding: 7px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .modal-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .modal-field {
+      margin-bottom: 1rem;
+    }
+    .modal-field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.4rem;
+    }
+    .modal-field input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .modal-field input:focus { border-color: var(--green); }
+    .btn-modal {
+      width: 100%;
+      background: var(--green);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0.85rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-modal:hover:not(:disabled) { background: var(--green-dk); }
+    .btn-modal:disabled { opacity: 0.45; cursor: not-allowed; }
+    .modal-error {
+      display: none;
+      background: rgba(239,68,68,.1);
+      border: 1px solid rgba(239,68,68,.3);
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+      margin-top: 0.75rem;
+      color: #E24B4A;
+      font-size: 0.8rem;
+    }
+    .modal-error.show { display: block; }
+    .modal-close {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--muted);
+      cursor: pointer;
+      margin-top: -4px;
+    }
+
     @media (max-width: 560px) {
       .score-row {
         grid-template-columns: 1fr;
@@ -384,6 +543,7 @@
       .actions {
         flex-direction: column;
       }
+      .nav-email { display: none; }
     }
   </style>
 </head>
@@ -394,7 +554,50 @@
     <span style="font-size: 1.5rem;">🚀</span>
     <span class="logo-text">Leapseek</span>
   </a>
+  <div class="nav-auth" id="nav-auth">
+    <button class="btn-nav btn-nav-login" id="btn-open-auth">Iniciar sesión</button>
+  </div>
 </nav>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div class="modal-title">Bienvenida</div>
+    <div class="modal-sub">Accede para guardar tu historial de CVs</div>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Entrar</button>
+      <button class="modal-tab" id="tab-signup" onclick="switchTab('signup')">Crear cuenta</button>
+    </div>
+
+    <div id="form-login">
+      <div class="modal-field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="tu@email.com" autocomplete="email">
+      </div>
+      <div class="modal-field">
+        <label>Contraseña</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-modal" id="btn-login">Entrar</button>
+      <div class="modal-error" id="login-error"></div>
+    </div>
+
+    <div id="form-signup" style="display:none">
+      <div class="modal-field">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="tu@email.com" autocomplete="email">
+      </div>
+      <div class="modal-field">
+        <label>Contraseña (mín. 6 caracteres)</label>
+        <input type="password" id="signup-password" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <button class="btn-modal" id="btn-signup">Crear cuenta</button>
+      <div class="modal-error" id="signup-error"></div>
+    </div>
+  </div>
+</div>
 
 <main>
   <div class="page-header">
@@ -472,6 +675,132 @@
 
 <script>
 const API_BASE = 'https://leapseek-production.up.railway.app/api';
+
+// ── AUTH STATE ────────────────────────────────────────────────────────────────
+let currentUser = JSON.parse(localStorage.getItem('ls_user') || 'null');
+let authToken   = localStorage.getItem('ls_token') || null;
+
+function saveAuth(token, user) {
+  authToken   = token;
+  currentUser = user;
+  localStorage.setItem('ls_token', token);
+  localStorage.setItem('ls_user', JSON.stringify(user));
+  renderNav();
+}
+
+function clearAuth() {
+  authToken   = null;
+  currentUser = null;
+  localStorage.removeItem('ls_token');
+  localStorage.removeItem('ls_user');
+  renderNav();
+}
+
+function renderNav() {
+  const nav = document.getElementById('nav-auth');
+  if (currentUser) {
+    nav.innerHTML = `
+      <span class="nav-email">${currentUser.email}</span>
+      <button class="btn-nav btn-nav-user" onclick="logout()">Salir</button>
+    `;
+  } else {
+    nav.innerHTML = `<button class="btn-nav btn-nav-login" id="btn-open-auth">Iniciar sesión</button>`;
+    document.getElementById('btn-open-auth').addEventListener('click', () => {
+      document.getElementById('modal-overlay').classList.add('show');
+    });
+  }
+}
+
+function logout() {
+  clearAuth();
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+document.getElementById('btn-open-auth').addEventListener('click', () => {
+  document.getElementById('modal-overlay').classList.add('show');
+});
+document.getElementById('modal-close').addEventListener('click', () => {
+  document.getElementById('modal-overlay').classList.remove('show');
+});
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+});
+
+function switchTab(tab) {
+  document.getElementById('form-login').style.display  = tab === 'login'  ? 'block' : 'none';
+  document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active',  tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+document.getElementById('btn-login').addEventListener('click', async () => {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-error');
+  const btn      = document.getElementById('btn-login');
+
+  errEl.classList.remove('show');
+  if (!email || !password) { showModalError(errEl, 'Completa todos los campos'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+  try {
+    const res  = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al entrar');
+    saveAuth(data.token, data.user);
+    document.getElementById('modal-overlay').classList.remove('show');
+  } catch (err) {
+    showModalError(errEl, err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+});
+
+// ── SIGNUP ────────────────────────────────────────────────────────────────────
+document.getElementById('btn-signup').addEventListener('click', async () => {
+  const email    = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const errEl    = document.getElementById('signup-error');
+  const btn      = document.getElementById('btn-signup');
+
+  errEl.classList.remove('show');
+  if (!email || !password) { showModalError(errEl, 'Completa todos los campos'); return; }
+  if (password.length < 6)  { showModalError(errEl, 'La contraseña debe tener al menos 6 caracteres'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Creando cuenta...';
+  try {
+    const res  = await fetch(`${API_BASE}/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al registrarte');
+    saveAuth(data.token, data.user);
+    document.getElementById('modal-overlay').classList.remove('show');
+  } catch (err) {
+    showModalError(errEl, err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Crear cuenta';
+  }
+});
+
+function showModalError(el, msg) {
+  el.textContent = '❌ ' + msg;
+  el.classList.add('show');
+}
+
+// Init nav on load
+renderNav();
 
 let cvFile = null;
 let resultData = null;
@@ -593,7 +922,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   pdfBase64 = null;
   fileInput.value = '';
   fileChosen.classList.remove('show');
-  document.getElementById('job-url').value = '';
+  document.getElementById('job-text').value = '';
   document.getElementById('results').classList.remove('show');
   document.getElementById('upload-section').style.display = 'block';
   checkReady();

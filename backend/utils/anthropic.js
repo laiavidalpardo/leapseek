@@ -79,10 +79,10 @@ Cuando sea incompatible:
     return base + `
 
 PASO 6 — CARTA DE PRESENTACIÓN:
-Escribe una carta profesional en el MISMO IDIOMA que la oferta (3-4 párrafos).
+Escribe una carta profesional de 3-4 párrafos en el MISMO IDIOMA que la oferta. Estructura: párrafo 1 presenta al candidato y el puesto, párrafo 2-3 relaciona sus logros más relevantes con las necesidades de la empresa, párrafo 4 cierra con llamada a la acción.
 
 PASO 7 — PREGUNTAS DE ENTREVISTA:
-Genera 5 preguntas específicas para ese puesto en el MISMO IDIOMA que la oferta.
+Genera exactamente 8 preguntas de entrevista específicas para ese puesto en el MISMO IDIOMA que la oferta. Mezcla: preguntas técnicas del rol, preguntas de comportamiento (método STAR) y una pregunta sobre motivación.
 
 El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
   }
@@ -90,17 +90,21 @@ El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
   return base;
 }
 
-async function optimizeCV(cvText, jobText, isPro = false, model = 'claude-haiku-4-5-20251001') {
+async function optimizeCV(cvText, jobText, isPro = false, model = 'claude-haiku-4-5-20251001', interviewLanguage = null) {
   const systemPrompt = buildSystemPrompt(isPro);
+
+  const langNote = interviewLanguage
+    ? `\n\nNOTA IMPORTANTE: Las preguntas de entrevista (preguntas_entrevista) deben estar en ESTE idioma: ${interviewLanguage}. El CV y la carta siguen en el idioma de la oferta.`
+    : '';
 
   const response = await client.messages.create({
     model,
-    max_tokens: 8000,
+    max_tokens: isPro ? 10000 : 8000,
     temperature: 0,
     system: systemPrompt,
     messages: [{
       role: 'user',
-      content: `CV:\n${cvText}\n\nOFERTA DE TRABAJO:\n${jobText}\n\nOptimiza el CV para esta oferta. Devuelve SOLO el JSON sin ningún texto adicional.`
+      content: `CV:\n${cvText}\n\nOFERTA DE TRABAJO:\n${jobText}\n\nOptimiza el CV para esta oferta. Devuelve SOLO el JSON sin ningún texto adicional.${langNote}`
     }]
   });
 

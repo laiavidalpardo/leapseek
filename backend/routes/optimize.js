@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const jwt = require('jsonwebtoken');
 const { optimizeCV } = require('../utils/anthropic');
 const { extractTextFromPDF } = require('../utils/pdfToText');
 const { extractTextFromWord } = require('../utils/wordToText');
@@ -69,7 +70,7 @@ async function extractCVText(file) {
 
 router.post('/', upload.single('cv'), async (req, res) => {
   try {
-    const { jobText } = req.body;
+    const { jobText, interviewLanguage } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ error: 'No CV file provided' });
@@ -77,6 +78,20 @@ router.post('/', upload.single('cv'), async (req, res) => {
 
     if (!jobText || jobText.trim().length < 50) {
       return res.status(400).json({ error: 'Job description too short' });
+    }
+
+    // Determine plan from JWT
+    let isPro = false;
+    let model = 'claude-haiku-4-5-20251001';
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const decoded = jwt.verify(authHeader.split(' ')[1], process.env.JWT_SECRET);
+        if (decoded.plan === 'pro' || decoded.plan === 'elite') {
+          isPro = true;
+          model = 'claude-sonnet-4-6';
+        }
+      } catch (_) {}
     }
 
     // Extract CV text
@@ -92,7 +107,7 @@ router.post('/', upload.single('cv'), async (req, res) => {
     }
 
     // Optimize CV with Anthropic
-    const result = await optimizeCV(cvText, jobText, false, 'claude-haiku-4-5-20251001');
+    const result = await optimizeCV(cvText, jobText, isPro, model, interviewLanguage || null);
 
     // Ensure keywords is an array of max 8
     if (Array.isArray(result.keywords)) {

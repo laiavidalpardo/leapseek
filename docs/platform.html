@@ -22,15 +22,8 @@
 }
 
 html, body { height: 100%; overflow: hidden; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── LAYOUT ── */
 .platform { display: flex; height: 100vh; }
 
 /* ── SIDEBAR ── */
@@ -42,7 +35,6 @@ body {
   flex-shrink: 0;
   padding: 1.25rem 0.875rem;
 }
-
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -55,14 +47,7 @@ body {
   padding: 0 0.5rem;
   margin-bottom: 2rem;
 }
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-}
-
+.sidebar-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .nav-item {
   display: flex;
   align-items: center;
@@ -79,13 +64,20 @@ body {
   transition: all 0.15s;
   text-align: left;
   width: 100%;
+  position: relative;
 }
 .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
 .nav-item.active { background: rgba(61,214,140,0.14); color: var(--green); }
 .nav-icon { font-size: 0.95rem; width: 18px; text-align: center; }
-
+.nav-ready {
+  margin-left: auto;
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  display: none;
+}
+.nav-ready.show { display: block; }
 .nav-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 0.6rem 0; }
-
 .sidebar-user {
   border-top: 1px solid rgba(255,255,255,0.07);
   padding-top: 1rem;
@@ -127,35 +119,18 @@ body {
 
 /* ── MAIN ── */
 .main { flex: 1; overflow-y: auto; padding: 2.25rem 2rem; }
-
 .section { display: none; }
 .section.active { display: block; }
 .section-header { margin-bottom: 1.75rem; }
-.section-header h1 {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 800;
-  margin-bottom: 0.2rem;
-}
+.section-header h1 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 0.2rem; }
 .section-header p { color: var(--muted); font-size: 0.875rem; }
 
 /* ── CARDS ── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 1.5rem;
-  margin-bottom: 1.25rem;
-}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.25rem; }
 .card h3 { font-size: 0.875rem; font-weight: 700; margin-bottom: 0.875rem; }
 
 /* ── FORM ── */
-.upload-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  margin-bottom: 1.25rem;
-}
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
 .upload-zone {
   border: 2px dashed var(--border);
   border-radius: 12px;
@@ -169,18 +144,8 @@ body {
 .upload-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
 .upload-label { font-size: 0.8rem; color: var(--muted); }
 .upload-label strong { color: var(--text); display: block; margin-bottom: 0.2rem; font-size: 0.875rem; }
-.file-chosen {
-  display: none;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.78rem;
-  color: var(--green);
-  font-weight: 600;
-  margin-top: 0.5rem;
-  justify-content: center;
-}
+.file-chosen { display: none; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--green); font-weight: 600; margin-top: 0.5rem; justify-content: center; }
 .file-chosen.show { display: flex; }
-
 textarea.job-input {
   width: 100%;
   height: 160px;
@@ -198,65 +163,54 @@ textarea.job-input {
 textarea.job-input:focus { outline: none; border-color: var(--green); }
 textarea.job-input::placeholder { color: var(--muted); }
 
-.error-box {
-  display: none;
-  background: rgba(239,68,68,.08);
-  border: 1px solid rgba(239,68,68,.25);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  color: #ef4444;
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
+.lang-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
 }
+.lang-row label { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+.lang-select {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+}
+.lang-select:focus { outline: none; border-color: var(--green); }
+
+.error-box { display: none; background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25); border-radius: 8px; padding: 0.75rem 1rem; color: #ef4444; font-size: 0.85rem; margin-bottom: 1rem; }
 .error-box.show { display: block; }
 
 /* ── BUTTONS ── */
 .actions-row { display: flex; gap: 0.875rem; flex-wrap: wrap; }
 .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
+  display: inline-flex; align-items: center; gap: 0.45rem;
   padding: 0.8rem 1.5rem;
-  background: var(--green);
-  color: var(--dark);
-  border: none;
-  border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
+  background: var(--green); color: var(--dark);
+  border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
 }
 .btn-primary:hover { background: var(--green-dk); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
+  display: inline-flex; align-items: center; gap: 0.45rem;
   padding: 0.8rem 1.25rem;
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border); border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
 }
 .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
 
 /* ── PROCESSING ── */
 .processing { display: none; text-align: center; padding: 3rem 2rem; }
 .processing.show { display: block; }
-.spinner {
-  width: 36px; height: 36px;
-  border: 3px solid var(--border);
-  border-top-color: var(--green);
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
-  margin: 0 auto 1rem;
-}
+.spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 1rem; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .processing p { color: var(--muted); font-size: 0.875rem; }
 
@@ -265,73 +219,41 @@ textarea.job-input::placeholder { color: var(--muted); }
 .results.show { display: block; }
 
 /* ── SCORE ── */
-.score-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-.score-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 1.5rem;
-  text-align: center;
-}
+.score-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+.score-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; text-align: center; }
 .score-card.after { border-color: rgba(61,214,140,.35); background: rgba(61,214,140,.05); }
-.score-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.875rem;
-}
+.score-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.875rem; }
 .score-card.after .score-label { color: var(--green); }
 .score-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.4rem; color: var(--text); }
 .score-card.after .score-num { color: var(--green); }
-
 .kw-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.kw-tag {
-  background: rgba(61,214,140,.1);
-  color: var(--green);
-  border: 1px solid rgba(61,214,140,.2);
-  border-radius: 100px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 3px 11px;
-}
+.kw-tag { background: rgba(61,214,140,.1); color: var(--green); border: 1px solid rgba(61,214,140,.2); border-radius: 100px; font-size: 0.72rem; font-weight: 600; padding: 3px 11px; }
 
 /* ── CARTA ── */
 .carta-result { font-size: 0.875rem; line-height: 1.85; white-space: pre-wrap; color: var(--text); }
 
 /* ── ENTREVISTA ── */
-.question-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 0.875rem;
-}
-.question-num {
-  font-size: 0.67rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--green);
-  margin-bottom: 0.45rem;
-}
+.question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 0.875rem; }
+.question-num { font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); margin-bottom: 0.45rem; }
 .question-text { font-size: 0.9rem; font-weight: 500; line-height: 1.55; }
+
+/* ── PENDING STATE ── */
+.pending-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--muted);
+}
+.pending-state .pending-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4; }
+.pending-state p { font-size: 0.875rem; line-height: 1.6; max-width: 320px; }
+.pending-state .go-btn { margin-top: 1.25rem; }
 
 /* ── HISTORIAL ── */
 .coming-soon { text-align: center; padding: 5rem 2rem; }
 .coming-soon-icon { font-size: 2.75rem; margin-bottom: 1rem; }
-.coming-soon h2 {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-}
+.coming-soon h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; }
 .coming-soon p { color: var(--muted); font-size: 0.875rem; max-width: 340px; margin: 0 auto; line-height: 1.6; }
 </style>
 </head>
@@ -345,23 +267,23 @@ textarea.job-input::placeholder { color: var(--muted); }
       <span>🚀</span>
       <span>Leapseek</span>
     </a>
-
     <nav class="sidebar-nav">
       <button class="nav-item active" data-section="optimizar">
         <span class="nav-icon">📄</span> Optimizar CV
       </button>
       <button class="nav-item" data-section="carta">
         <span class="nav-icon">✉️</span> Carta
+        <span class="nav-ready" id="dot-carta"></span>
       </button>
       <button class="nav-item" data-section="entrevista">
         <span class="nav-icon">🎤</span> Entrevista
+        <span class="nav-ready" id="dot-entrevista"></span>
       </button>
       <div class="nav-divider"></div>
       <button class="nav-item" data-section="historial">
         <span class="nav-icon">📁</span> Historial
       </button>
     </nav>
-
     <div class="sidebar-user">
       <div class="user-email" id="user-email">—</div>
       <div class="user-plan-badge" id="user-plan-badge">Pro</div>
@@ -376,7 +298,7 @@ textarea.job-input::placeholder { color: var(--muted); }
     <section id="section-optimizar" class="section active">
       <div class="section-header">
         <h1>Optimizar CV</h1>
-        <p>Adapta tu CV a cada oferta y pasa los filtros ATS. Sin límite de usos.</p>
+        <p>Adapta tu CV a cada oferta y pasa los filtros ATS. La carta y las preguntas de entrevista se generan a la vez.</p>
       </div>
 
       <div id="opt-upload">
@@ -395,6 +317,14 @@ textarea.job-input::placeholder { color: var(--muted); }
             <textarea class="job-input" id="opt-job-text" placeholder="Pega aquí la descripción de la oferta de trabajo…"></textarea>
           </div>
         </div>
+        <div class="lang-row">
+          <label for="lang-select">Idioma de las preguntas de entrevista:</label>
+          <select class="lang-select" id="lang-select">
+            <option value="auto">Automático (igual que la oferta)</option>
+            <option value="español">Español</option>
+            <option value="English">English</option>
+          </select>
+        </div>
         <div class="error-box" id="opt-error"></div>
         <div class="actions-row">
           <button class="btn-primary" id="opt-btn">⚡ Optimizar CV</button>
@@ -403,7 +333,7 @@ textarea.job-input::placeholder { color: var(--muted); }
 
       <div class="processing" id="opt-processing">
         <div class="spinner"></div>
-        <p>Analizando y optimizando tu CV…</p>
+        <p>Analizando tu CV, generando carta y preguntas de entrevista…</p>
       </div>
 
       <div class="results" id="opt-results">
@@ -427,7 +357,7 @@ textarea.job-input::placeholder { color: var(--muted); }
         </div>
         <div class="actions-row" style="margin-top:1rem;">
           <button class="btn-primary" id="opt-download">⬇️ Descargar PDF</button>
-          <button class="btn-secondary" id="opt-reset">↩ Nuevo</button>
+          <button class="btn-secondary" id="opt-reset">↩ Nueva optimización</button>
         </div>
       </div>
     </section>
@@ -436,34 +366,13 @@ textarea.job-input::placeholder { color: var(--muted); }
     <section id="section-carta" class="section">
       <div class="section-header">
         <h1>Carta de presentación</h1>
-        <p>Genera una carta personalizada para cada oferta, lista para enviar.</p>
+        <p>Generada automáticamente al optimizar tu CV. Lista para copiar y enviar.</p>
       </div>
 
-      <div id="carta-upload">
-        <div class="upload-grid">
-          <div>
-            <div class="upload-zone" onclick="document.getElementById('carta-file').click()">
-              <input type="file" id="carta-file" accept=".pdf">
-              <div class="upload-icon">📎</div>
-              <div class="upload-label">
-                <strong>Sube tu CV</strong>PDF · máx. 5 MB
-              </div>
-            </div>
-            <div class="file-chosen" id="carta-file-chosen">✓ <span id="carta-file-name"></span></div>
-          </div>
-          <div>
-            <textarea class="job-input" id="carta-job-text" placeholder="Pega aquí la descripción de la oferta de trabajo…"></textarea>
-          </div>
-        </div>
-        <div class="error-box" id="carta-error"></div>
-        <div class="actions-row">
-          <button class="btn-primary" id="carta-btn">✉️ Generar carta</button>
-        </div>
-      </div>
-
-      <div class="processing" id="carta-processing">
-        <div class="spinner"></div>
-        <p>Redactando tu carta de presentación…</p>
+      <div id="carta-pending" class="pending-state">
+        <div class="pending-icon">✉️</div>
+        <p>La carta se genera automáticamente cuando optimizas tu CV. Ve a la sección Optimizar CV para empezar.</p>
+        <button class="btn-primary go-btn" onclick="switchSection('optimizar')">Ir a Optimizar CV →</button>
       </div>
 
       <div class="results" id="carta-results">
@@ -472,7 +381,6 @@ textarea.job-input::placeholder { color: var(--muted); }
         </div>
         <div class="actions-row" style="margin-top:1rem;">
           <button class="btn-primary" id="carta-copy">📋 Copiar carta</button>
-          <button class="btn-secondary" id="carta-reset">↩ Nueva carta</button>
         </div>
       </div>
     </section>
@@ -481,44 +389,20 @@ textarea.job-input::placeholder { color: var(--muted); }
     <section id="section-entrevista" class="section">
       <div class="section-header">
         <h1>Simulacro de entrevista</h1>
-        <p>Preguntas reales basadas en la oferta y tu perfil. Practica antes de llegar.</p>
+        <p>Preguntas específicas para el puesto y tu perfil. Generadas al optimizar el CV.</p>
       </div>
 
-      <div id="ent-upload">
-        <div class="upload-grid">
-          <div>
-            <div class="upload-zone" onclick="document.getElementById('ent-file').click()">
-              <input type="file" id="ent-file" accept=".pdf">
-              <div class="upload-icon">📎</div>
-              <div class="upload-label">
-                <strong>Sube tu CV</strong>PDF · máx. 5 MB
-              </div>
-            </div>
-            <div class="file-chosen" id="ent-file-chosen">✓ <span id="ent-file-name"></span></div>
-          </div>
-          <div>
-            <textarea class="job-input" id="ent-job-text" placeholder="Pega aquí la descripción de la oferta de trabajo…"></textarea>
-          </div>
-        </div>
-        <div class="error-box" id="ent-error"></div>
-        <div class="actions-row">
-          <button class="btn-primary" id="ent-btn">🎤 Generar preguntas</button>
-        </div>
-      </div>
-
-      <div class="processing" id="ent-processing">
-        <div class="spinner"></div>
-        <p>Preparando tu simulacro de entrevista…</p>
+      <div id="ent-pending" class="pending-state">
+        <div class="pending-icon">🎤</div>
+        <p>Las preguntas se generan automáticamente cuando optimizas tu CV. Puedes elegir el idioma de las preguntas en el formulario de optimización.</p>
+        <button class="btn-primary go-btn" onclick="switchSection('optimizar')">Ir a Optimizar CV →</button>
       </div>
 
       <div class="results" id="ent-results">
         <div class="card" style="margin-bottom:1.25rem;">
-          <p style="font-size:.85rem;color:var(--muted);line-height:1.65;">Practica en voz alta o por escrito. No hay respuestas correctas — el objetivo es que pienses en tus ejemplos reales antes de llegar a la entrevista.</p>
+          <p style="font-size:.85rem;color:var(--muted);line-height:1.65;">Practica en voz alta o por escrito. No hay respuestas correctas — el objetivo es que pienses en tus ejemplos reales antes de llegar.</p>
         </div>
         <div id="ent-questions"></div>
-        <div class="actions-row" style="margin-top:1rem;">
-          <button class="btn-secondary" id="ent-reset">↩ Nueva sesión</button>
-        </div>
       </div>
     </section>
 
@@ -545,11 +429,8 @@ const API_BASE = 'https://leapseek-production.up.railway.app/api';
 let currentUser = JSON.parse(localStorage.getItem('ls_user') || 'null');
 let authToken   = localStorage.getItem('ls_token') || null;
 
-if (!currentUser || !authToken) {
-  window.location.href = 'index.html';
-} else if (currentUser.plan === 'free') {
-  window.location.href = 'app.html';
-}
+if (!currentUser || !authToken) { window.location.href = 'index.html'; }
+else if (currentUser.plan === 'free') { window.location.href = 'app.html'; }
 
 document.getElementById('user-email').textContent = currentUser?.email || '—';
 const planLabel = currentUser?.plan || 'pro';
@@ -562,39 +443,76 @@ function logout() {
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
+function switchSection(name) {
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const btn = document.querySelector(`.nav-item[data-section="${name}"]`);
+  if (btn) btn.classList.add('active');
+  document.getElementById('section-' + name).classList.add('active');
+}
+
 document.querySelectorAll('.nav-item[data-section]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('section-' + btn.dataset.section).classList.add('active');
-  });
+  btn.addEventListener('click', () => switchSection(btn.dataset.section));
 });
+
+// ── SHARED STATE ──────────────────────────────────────────────────────────────
+let sharedResult = null;
+let sharedPdf    = null;
+
+function applySharedResults(data) {
+  sharedResult = data;
+  sharedPdf    = data.pdf_base64;
+
+  // Populate carta
+  const cartaText = data.carta_presentacion || '';
+  if (cartaText) {
+    document.getElementById('carta-text').textContent = cartaText;
+    document.getElementById('carta-pending').style.display = 'none';
+    document.getElementById('carta-results').classList.add('show');
+    document.getElementById('dot-carta').classList.add('show');
+  }
+
+  // Populate entrevista
+  const preguntas = data.preguntas_entrevista || [];
+  if (preguntas.length) {
+    document.getElementById('ent-questions').innerHTML = preguntas.map((q, i) => `
+      <div class="question-card">
+        <div class="question-num">Pregunta ${i + 1}</div>
+        <div class="question-text">${q}</div>
+      </div>
+    `).join('');
+    document.getElementById('ent-pending').style.display = 'none';
+    document.getElementById('ent-results').classList.add('show');
+    document.getElementById('dot-entrevista').classList.add('show');
+  }
+}
+
+function clearSharedResults() {
+  sharedResult = null;
+  sharedPdf    = null;
+
+  document.getElementById('carta-pending').style.display = 'flex';
+  document.getElementById('carta-results').classList.remove('show');
+  document.getElementById('dot-carta').classList.remove('show');
+
+  document.getElementById('ent-pending').style.display = 'flex';
+  document.getElementById('ent-results').classList.remove('show');
+  document.getElementById('dot-entrevista').classList.remove('show');
+}
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('show'); }
 function hideErr(id) { document.getElementById(id).classList.remove('show'); }
 
-async function callOptimize(file, jobText) {
-  const formData = new FormData();
-  formData.append('cv', file);
-  formData.append('jobText', jobText);
-  const res = await fetch(`${API_BASE}/optimize`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${authToken}` },
-    body: formData
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Error al procesar');
-  return data;
-}
-
 // ── OPTIMIZAR ─────────────────────────────────────────────────────────────────
-let optFile = null, optPdf = null;
+let optFile = null;
 
 document.getElementById('opt-file').addEventListener('change', function() {
   optFile = this.files[0];
-  if (optFile) { document.getElementById('opt-file-name').textContent = optFile.name; document.getElementById('opt-file-chosen').classList.add('show'); }
+  if (optFile) {
+    document.getElementById('opt-file-name').textContent = optFile.name;
+    document.getElementById('opt-file-chosen').classList.add('show');
+  }
 });
 
 document.getElementById('opt-btn').addEventListener('click', async () => {
@@ -603,20 +521,35 @@ document.getElementById('opt-btn').addEventListener('click', async () => {
   const jobText = document.getElementById('opt-job-text').value.trim();
   if (!jobText) return showErr('opt-error', 'Pega la descripción de la oferta.');
 
+  const langValue = document.getElementById('lang-select').value;
+  const interviewLanguage = langValue === 'auto' ? null : langValue;
+
   document.getElementById('opt-upload').style.display = 'none';
   document.getElementById('opt-processing').classList.add('show');
 
   try {
-    const data = await callOptimize(optFile, jobText);
-    optPdf = data.pdf_base64;
+    const formData = new FormData();
+    formData.append('cv', optFile);
+    formData.append('jobText', jobText);
+    if (interviewLanguage) formData.append('interviewLanguage', interviewLanguage);
 
-    document.getElementById('opt-score-before').textContent = (data.score_antes  || 0) + '%';
+    const res = await fetch(`${API_BASE}/optimize`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${authToken}` },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al procesar');
+
+    document.getElementById('opt-score-before').textContent = (data.score_antes   || 0) + '%';
     document.getElementById('opt-score-after').textContent  = (data.score_despues || 0) + '%';
     document.getElementById('opt-kw-tags').innerHTML = (data.keywords || []).slice(0, 8).map(k => `<span class="kw-tag">${k}</span>`).join('');
     document.getElementById('opt-cv-text').textContent = data.cv_optimizado || '';
 
     document.getElementById('opt-processing').classList.remove('show');
     document.getElementById('opt-results').classList.add('show');
+
+    applySharedResults(data);
   } catch (err) {
     document.getElementById('opt-processing').classList.remove('show');
     document.getElementById('opt-upload').style.display = 'block';
@@ -625,51 +558,24 @@ document.getElementById('opt-btn').addEventListener('click', async () => {
 });
 
 document.getElementById('opt-download').addEventListener('click', () => {
-  if (!optPdf) return;
+  if (!sharedPdf) return;
   const link = document.createElement('a');
-  link.href = 'data:application/pdf;base64,' + optPdf;
+  link.href = 'data:application/pdf;base64,' + sharedPdf;
   link.download = 'cv_optimizado.pdf';
   link.click();
 });
 
 document.getElementById('opt-reset').addEventListener('click', () => {
-  optFile = null; optPdf = null;
+  optFile = null;
   document.getElementById('opt-file').value = '';
   document.getElementById('opt-file-chosen').classList.remove('show');
   document.getElementById('opt-job-text').value = '';
   document.getElementById('opt-results').classList.remove('show');
   document.getElementById('opt-upload').style.display = 'block';
+  clearSharedResults();
 });
 
 // ── CARTA ─────────────────────────────────────────────────────────────────────
-let cartaFile = null;
-
-document.getElementById('carta-file').addEventListener('change', function() {
-  cartaFile = this.files[0];
-  if (cartaFile) { document.getElementById('carta-file-name').textContent = cartaFile.name; document.getElementById('carta-file-chosen').classList.add('show'); }
-});
-
-document.getElementById('carta-btn').addEventListener('click', async () => {
-  hideErr('carta-error');
-  if (!cartaFile) return showErr('carta-error', 'Sube tu CV en PDF.');
-  const jobText = document.getElementById('carta-job-text').value.trim();
-  if (!jobText) return showErr('carta-error', 'Pega la descripción de la oferta.');
-
-  document.getElementById('carta-upload').style.display = 'none';
-  document.getElementById('carta-processing').classList.add('show');
-
-  try {
-    const data = await callOptimize(cartaFile, jobText);
-    document.getElementById('carta-text').textContent = data.carta_presentacion || 'No se pudo generar la carta.';
-    document.getElementById('carta-processing').classList.remove('show');
-    document.getElementById('carta-results').classList.add('show');
-  } catch (err) {
-    document.getElementById('carta-processing').classList.remove('show');
-    document.getElementById('carta-upload').style.display = 'block';
-    showErr('carta-error', err.message);
-  }
-});
-
 document.getElementById('carta-copy').addEventListener('click', () => {
   const text = document.getElementById('carta-text').textContent;
   navigator.clipboard.writeText(text).then(() => {
@@ -677,59 +583,6 @@ document.getElementById('carta-copy').addEventListener('click', () => {
     btn.textContent = '✓ Copiada';
     setTimeout(() => { btn.innerHTML = '📋 Copiar carta'; }, 2000);
   });
-});
-
-document.getElementById('carta-reset').addEventListener('click', () => {
-  cartaFile = null;
-  document.getElementById('carta-file').value = '';
-  document.getElementById('carta-file-chosen').classList.remove('show');
-  document.getElementById('carta-job-text').value = '';
-  document.getElementById('carta-results').classList.remove('show');
-  document.getElementById('carta-upload').style.display = 'block';
-});
-
-// ── ENTREVISTA ────────────────────────────────────────────────────────────────
-let entFile = null;
-
-document.getElementById('ent-file').addEventListener('change', function() {
-  entFile = this.files[0];
-  if (entFile) { document.getElementById('ent-file-name').textContent = entFile.name; document.getElementById('ent-file-chosen').classList.add('show'); }
-});
-
-document.getElementById('ent-btn').addEventListener('click', async () => {
-  hideErr('ent-error');
-  if (!entFile) return showErr('ent-error', 'Sube tu CV en PDF.');
-  const jobText = document.getElementById('ent-job-text').value.trim();
-  if (!jobText) return showErr('ent-error', 'Pega la descripción de la oferta.');
-
-  document.getElementById('ent-upload').style.display = 'none';
-  document.getElementById('ent-processing').classList.add('show');
-
-  try {
-    const data = await callOptimize(entFile, jobText);
-    const preguntas = data.preguntas_entrevista || [];
-    document.getElementById('ent-questions').innerHTML = preguntas.map((q, i) => `
-      <div class="question-card">
-        <div class="question-num">Pregunta ${i + 1}</div>
-        <div class="question-text">${q}</div>
-      </div>
-    `).join('');
-    document.getElementById('ent-processing').classList.remove('show');
-    document.getElementById('ent-results').classList.add('show');
-  } catch (err) {
-    document.getElementById('ent-processing').classList.remove('show');
-    document.getElementById('ent-upload').style.display = 'block';
-    showErr('ent-error', err.message);
-  }
-});
-
-document.getElementById('ent-reset').addEventListener('click', () => {
-  entFile = null;
-  document.getElementById('ent-file').value = '';
-  document.getElementById('ent-file-chosen').classList.remove('show');
-  document.getElementById('ent-job-text').value = '';
-  document.getElementById('ent-results').classList.remove('show');
-  document.getElementById('ent-upload').style.display = 'block';
 });
 </script>
 

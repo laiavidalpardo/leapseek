@@ -829,7 +829,11 @@ document.getElementById('btn-login').addEventListener('click', async () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Error al entrar');
     saveAuth(data.token, data.user);
-    document.getElementById('modal-overlay').classList.remove('show');
+    if (data.user.plan === 'pro' || data.user.plan === 'elite') {
+      window.location.href = 'platform.html';
+    } else {
+      document.getElementById('modal-overlay').classList.remove('show');
+    }
   } catch (err) {
     showModalError(errEl, err.message);
   } finally {
@@ -860,7 +864,11 @@ document.getElementById('btn-signup').addEventListener('click', async () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Error al registrarte');
     saveAuth(data.token, data.user);
-    document.getElementById('modal-overlay').classList.remove('show');
+    if (data.user.plan === 'pro' || data.user.plan === 'elite') {
+      window.location.href = 'platform.html';
+    } else {
+      document.getElementById('modal-overlay').classList.remove('show');
+    }
   } catch (err) {
     showModalError(errEl, err.message);
   } finally {

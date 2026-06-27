@@ -941,11 +941,9 @@ footer p { font-size: .78rem; color: rgba(255,255,255,.3); }
   }
 
   function goToApp() {
-    if (getToken()) {
-      window.location.href = 'app.html';
-    } else {
-      openAuthModal();
-    }
+    const user = getUser();
+    if (!getToken()) return openAuthModal();
+    window.location.href = (user?.plan === 'pro' || user?.plan === 'elite') ? 'platform.html' : 'app.html';
   }
 
   function openAuthModal() {
@@ -980,7 +978,7 @@ footer p { font-size: .78rem; color: rgba(255,255,255,.3); }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al entrar');
       saveAuth(data.token, data.user);
-      window.location.href = 'app.html';
+      window.location.href = (data.user.plan === 'pro' || data.user.plan === 'elite') ? 'platform.html' : 'app.html';
     } catch(err) { errEl.textContent = '❌ ' + err.message; errEl.style.display = 'block'; }
   }
 
@@ -996,7 +994,7 @@ footer p { font-size: .78rem; color: rgba(255,255,255,.3); }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al registrarte');
       saveAuth(data.token, data.user);
-      window.location.href = 'app.html';
+      window.location.href = (data.user.plan === 'pro' || data.user.plan === 'elite') ? 'platform.html' : 'app.html';
     } catch(err) { errEl.textContent = '❌ ' + err.message; errEl.style.display = 'block'; }
   }
 

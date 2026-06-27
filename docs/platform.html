@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Leapseek — Plataforma Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green:    #3DD68C;
+  --green-dk: #28B874;
+  --bg:       #F7FBF9;
+  --dark:     #0E1A14;
+  --surface:  #FFFFFF;
+  --border:   #D6EDE3;
+  --text:     #0E1A14;
+  --muted:    #6B8F7A;
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LAYOUT ── */
+.platform { display: flex; height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  background: var(--dark);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 1.25rem 0.875rem;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: #fff;
+  text-decoration: none;
+  padding: 0 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.55);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  width: 100%;
+}
+.nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+.nav-item.active { background: rgba(61,214,140,0.14); color: var(--green); }
+.nav-icon { font-size: 0.95rem; width: 18px; text-align: center; }
+
+.nav-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 0.6rem 0; }
+
+.sidebar-user {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 1rem;
+}
+.user-email {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.35rem;
+  padding: 0 0.25rem;
+}
+.user-plan-badge {
+  display: inline-block;
+  background: rgba(61,214,140,0.15);
+  color: var(--green);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin: 0 0.25rem 0.75rem;
+}
+.btn-logout {
+  width: 100%;
+  padding: 0.55rem;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  color: rgba(255,255,255,0.4);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-logout:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75); }
+
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; padding: 2.25rem 2rem; }
+
+.section { display: none; }
+.section.active { display: block; }
+.section-header { margin-bottom: 1.75rem; }
+.section-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+}
+.section-header p { color: var(--muted); font-size: 0.875rem; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.card h3 { font-size: 0.875rem; font-weight: 700; margin-bottom: 0.875rem; }
+
+/* ── FORM ── */
+.upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 1.75rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.upload-zone:hover { border-color: var(--green); background: rgba(61,214,140,0.04); }
+.upload-zone input { display: none; }
+.upload-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
+.upload-label { font-size: 0.8rem; color: var(--muted); }
+.upload-label strong { color: var(--text); display: block; margin-bottom: 0.2rem; font-size: 0.875rem; }
+.file-chosen {
+  display: none;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--green);
+  font-weight: 600;
+  margin-top: 0.5rem;
+  justify-content: center;
+}
+.file-chosen.show { display: flex; }
+
+textarea.job-input {
+  width: 100%;
+  height: 160px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.875rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  color: var(--text);
+  background: var(--surface);
+  resize: none;
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+textarea.job-input:focus { outline: none; border-color: var(--green); }
+textarea.job-input::placeholder { color: var(--muted); }
+
+.error-box {
+  display: none;
+  background: rgba(239,68,68,.08);
+  border: 1px solid rgba(239,68,68,.25);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.error-box.show { display: block; }
+
+/* ── BUTTONS ── */
+.actions-row { display: flex; gap: 0.875rem; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.8rem 1.5rem;
+  background: var(--green);
+  color: var(--dark);
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary:hover { background: var(--green-dk); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.8rem 1.25rem;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+
+/* ── PROCESSING ── */
+.processing { display: none; text-align: center; padding: 3rem 2rem; }
+.processing.show { display: block; }
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  margin: 0 auto 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.processing p { color: var(--muted); font-size: 0.875rem; }
+
+/* ── RESULTS ── */
+.results { display: none; }
+.results.show { display: block; }
+
+/* ── SCORE ── */
+.score-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.score-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  text-align: center;
+}
+.score-card.after { border-color: rgba(61,214,140,.35); background: rgba(61,214,140,.05); }
+.score-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.875rem;
+}
+.score-card.after .score-label { color: var(--green); }
+.score-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.4rem; color: var(--text); }
+.score-card.after .score-num { color: var(--green); }
+
+.kw-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.kw-tag {
+  background: rgba(61,214,140,.1);
+  color: var(--green);
+  border: 1px solid rgba(61,214,140,.2);
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 11px;
+}
+
+/* ── CARTA ── */
+.carta-result { font-size: 0.875rem; line-height: 1.85; white-space: pre-wrap; color: var(--text); }
+
+/* ── ENTREVISTA ── */
+.question-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 0.875rem;
+}
+.question-num {
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--green);
+  margin-bottom: 0.45rem;
+}
+.question-text { font-size: 0.9rem; font-weight: 500; line-height: 1.55; }
+
+/* ── HISTORIAL ── */
+.coming-soon { text-align: center; padding: 5rem 2rem; }
+.coming-soon-icon { font-size: 2.75rem; margin-bottom: 1rem; }
+.coming-soon h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.coming-soon p { color: var(--muted); font-size: 0.875rem; max-width: 340px; margin: 0 auto; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="platform">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-logo">
+      <span>🚀</span>
+      <span>Leapseek</span>
+    </a>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-section="optimizar">
+        <span class="nav-icon">📄</span> Optimizar CV
+      </button>
+      <button class="nav-item" data-section="carta">
+        <span class="nav-icon">✉️</span> Carta
+      </button>
+      <button class="nav-item" data-section="entrevista">
+        <span class="nav-icon">🎤</span> Entrevista
+      </button>
+      <div class="nav-divider"></div>
+      <button class="nav-item" data-section="historial">
+        <span class="nav-icon">📁</span> Historial
+      </button>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-email" id="user-email">—</div>
+      <div class="user-plan-badge" id="user-plan-badge">Pro</div>
+      <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- OPTIMIZAR -->
+    <section id="section-optimizar" class="section active">
+      <div class="section-header">
+        <h1>Optimizar CV</h1>
+        <p>Adapta tu CV a cada oferta y pasa los filtros ATS. Sin límite de usos.</p>
+      </div>
+
+      <div id="opt-upload">
+        <div class="upload-grid">
+          <div>
+            <div class="upload-zone" onclick="document.getElementById('opt-file').click()">
+              <input type="file" id="opt-file" accept=".pdf">
+              <div class="upload-icon">📎</div>
+              <div class="upload-label">
+                <strong>Sube tu CV</strong>PDF · máx. 5 MB
+              </div>
+            </div>
+            <div class="file-chosen" id="opt-file-chosen">✓ <span id="opt-file-name"></span></div>
+          </div>
+          <div>
+            <textarea class="job-input" id="opt-job-text" placeholder="Pega aquí la descripción de la oferta de trabajo…"></textarea>
+          </div>
+        </div>
+        <div class="error-box" id="opt-error"></div>
+        <div class="actions-row">
+          <button class="btn-primary" id="opt-btn">⚡ Optimizar CV</button>
+        </div>
+      </div>
+
+      <div class="processing" id="opt-processing">
+        <div class="spinner"></div>
+        <p>Analizando y optimizando tu CV…</p>
+      </div>
+
+      <div class="results" id="opt-results">
+        <div class="score-row">
+          <div class="score-card">
+            <div class="score-label">Tu CV Original</div>
+            <div class="score-num" id="opt-score-before">0%</div>
+          </div>
+          <div class="score-card after">
+            <div class="score-label">Después de Leapseek</div>
+            <div class="score-num" id="opt-score-after">0%</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>🔑 Palabras clave detectadas</h3>
+          <div class="kw-tags" id="opt-kw-tags"></div>
+        </div>
+        <div class="card">
+          <h3>CV Optimizado</h3>
+          <div id="opt-cv-text" style="font-size:.85rem;line-height:1.65;white-space:pre-wrap;max-height:320px;overflow-y:auto;color:var(--text);"></div>
+        </div>
+        <div class="actions-row" style="margin-top:1rem;">
+          <button class="btn-primary" id="opt-download">⬇️ Descargar PDF</button>
+          <button class="btn-secondary" id="opt-reset">↩ Nuevo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARTA -->
+    <section id="section-carta" class="section">
+      <div class="section-header">
+        <h1>Carta de presentación</h1>
+        <p>Genera una carta personalizada para cada oferta, lista para enviar.</p>
+      </div>
+
+      <div id="carta-upload">
+        <div class="upload-grid">
+          <div>
+            <div class="upload-zone" onclick="document.getElementById('carta-file').click()">
+              <input type="file" id="carta-file" accept=".pdf">
+              <div class="upload-icon">📎</div>
+              <div class="upload-label">
+                <strong>Sube tu CV</strong>PDF · máx. 5 MB
+              </div>
+            </div>
+            <div class="file-chosen" id="carta-file-chosen">✓ <span id="carta-file-name"></span></div>
+          </div>
+          <div>
+            <textarea class="job-input" id="carta-job-text" placeholder="Pega aquí la descripción de la oferta de trabajo…"></textarea>
+          </div>
+        </div>
+        <div class="error-box" id="carta-error"></div>
+        <div class="actions-row">
+          <button class="btn-primary" id="carta-btn">✉️ Generar carta</button>
+        </div>
+      </div>
+
+      <div class="processing" id="carta-processing">
+        <div class="spinner"></div>
+        <p>Redactando tu carta de presentación…</p>
+      </div>
+
+      <div class="results" id="carta-results">
+        <div class="card">
+          <div class="carta-result" id="carta-text"></div>
+        </div>
+        <div class="actions-row" style="margin-top:1rem;">
+          <button class="btn-primary" id="carta-copy">📋 Copiar carta</button>
+          <button class="btn-secondary" id="carta-reset">↩ Nueva carta</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENTREVISTA -->
+    <section id="section-entrevista" class="section">
+      <div class="section-header">
+        <h1>Simulacro de entrevista</h1>
+        <p>Preguntas reales basadas en la oferta y tu perfil. Practica antes de llegar.</p>
+      </div>
+
+      <div id="ent-upload">
+        <div class="upload-grid">
+          <div>
+            <div class="upload-zone" onclick="document.getElementById('ent-file').click()">
+              <input type="file" id="ent-file" accept=".pdf">
+              <div class="upload-icon">📎</div>
+              <div class="upload-label">
+                <strong>Sube tu CV</strong>PDF · máx. 5 MB
+              </div>
+            </div>
+            <div class="file-chosen" id="ent-file-chosen">✓ <span id="ent-file-name"></span></div>
+          </div>
+          <div>
+            <textarea class="job-input" id="ent-job-text" placeholder="Pega aquí la descripción de la oferta de trabajo…"></textarea>
+          </div>
+        </div>
+        <div class="error-box" id="ent-error"></div>
+        <div class="actions-row">
+          <button class="btn-primary" id="ent-btn">🎤 Generar preguntas</button>
+        </div>
+      </div>
+
+      <div class="processing" id="ent-processing">
+        <div class="spinner"></div>
+        <p>Preparando tu simulacro de entrevista…</p>
+      </div>
+
+      <div class="results" id="ent-results">
+        <div class="card" style="margin-bottom:1.25rem;">
+          <p style="font-size:.85rem;color:var(--muted);line-height:1.65;">Practica en voz alta o por escrito. No hay respuestas correctas — el objetivo es que pienses en tus ejemplos reales antes de llegar a la entrevista.</p>
+        </div>
+        <div id="ent-questions"></div>
+        <div class="actions-row" style="margin-top:1rem;">
+          <button class="btn-secondary" id="ent-reset">↩ Nueva sesión</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORIAL -->
+    <section id="section-historial" class="section">
+      <div class="section-header">
+        <h1>Historial de candidaturas</h1>
+        <p>Haz seguimiento de cada oferta a la que te has presentado.</p>
+      </div>
+      <div class="coming-soon">
+        <div class="coming-soon-icon">📁</div>
+        <h2>Próximamente</h2>
+        <p>Podrás ver todos tus CVs optimizados y seguir el estado de cada candidatura — CV enviado, entrevista, oferta o rechazado.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+const API_BASE = 'https://leapseek-production.up.railway.app/api';
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+let currentUser = JSON.parse(localStorage.getItem('ls_user') || 'null');
+let authToken   = localStorage.getItem('ls_token') || null;
+
+if (!currentUser || !authToken) {
+  window.location.href = 'index.html';
+} else if (currentUser.plan === 'free') {
+  window.location.href = 'app.html';
+}
+
+document.getElementById('user-email').textContent = currentUser?.email || '—';
+const planLabel = currentUser?.plan || 'pro';
+document.getElementById('user-plan-badge').textContent = planLabel.charAt(0).toUpperCase() + planLabel.slice(1);
+
+function logout() {
+  localStorage.removeItem('ls_token');
+  localStorage.removeItem('ls_user');
+  window.location.href = 'index.html';
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+document.querySelectorAll('.nav-item[data-section]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('section-' + btn.dataset.section).classList.add('active');
+  });
+});
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('show'); }
+function hideErr(id) { document.getElementById(id).classList.remove('show'); }
+
+async function callOptimize(file, jobText) {
+  const formData = new FormData();
+  formData.append('cv', file);
+  formData.append('jobText', jobText);
+  const res = await fetch(`${API_BASE}/optimize`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${authToken}` },
+    body: formData
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error al procesar');
+  return data;
+}
+
+// ── OPTIMIZAR ─────────────────────────────────────────────────────────────────
+let optFile = null, optPdf = null;
+
+document.getElementById('opt-file').addEventListener('change', function() {
+  optFile = this.files[0];
+  if (optFile) { document.getElementById('opt-file-name').textContent = optFile.name; document.getElementById('opt-file-chosen').classList.add('show'); }
+});
+
+document.getElementById('opt-btn').addEventListener('click', async () => {
+  hideErr('opt-error');
+  if (!optFile) return showErr('opt-error', 'Sube tu CV en PDF.');
+  const jobText = document.getElementById('opt-job-text').value.trim();
+  if (!jobText) return showErr('opt-error', 'Pega la descripción de la oferta.');
+
+  document.getElementById('opt-upload').style.display = 'none';
+  document.getElementById('opt-processing').classList.add('show');
+
+  try {
+    const data = await callOptimize(optFile, jobText);
+    optPdf = data.pdf_base64;
+
+    document.getElementById('opt-score-before').textContent = (data.score_antes  || 0) + '%';
+    document.getElementById('opt-score-after').textContent  = (data.score_despues || 0) + '%';
+    document.getElementById('opt-kw-tags').innerHTML = (data.keywords || []).slice(0, 8).map(k => `<span class="kw-tag">${k}</span>`).join('');
+    document.getElementById('opt-cv-text').textContent = data.cv_optimizado || '';
+
+    document.getElementById('opt-processing').classList.remove('show');
+    document.getElementById('opt-results').classList.add('show');
+  } catch (err) {
+    document.getElementById('opt-processing').classList.remove('show');
+    document.getElementById('opt-upload').style.display = 'block';
+    showErr('opt-error', err.message);
+  }
+});
+
+document.getElementById('opt-download').addEventListener('click', () => {
+  if (!optPdf) return;
+  const link = document.createElement('a');
+  link.href = 'data:application/pdf;base64,' + optPdf;
+  link.download = 'cv_optimizado.pdf';
+  link.click();
+});
+
+document.getElementById('opt-reset').addEventListener('click', () => {
+  optFile = null; optPdf = null;
+  document.getElementById('opt-file').value = '';
+  document.getElementById('opt-file-chosen').classList.remove('show');
+  document.getElementById('opt-job-text').value = '';
+  document.getElementById('opt-results').classList.remove('show');
+  document.getElementById('opt-upload').style.display = 'block';
+});
+
+// ── CARTA ─────────────────────────────────────────────────────────────────────
+let cartaFile = null;
+
+document.getElementById('carta-file').addEventListener('change', function() {
+  cartaFile = this.files[0];
+  if (cartaFile) { document.getElementById('carta-file-name').textContent = cartaFile.name; document.getElementById('carta-file-chosen').classList.add('show'); }
+});
+
+document.getElementById('carta-btn').addEventListener('click', async () => {
+  hideErr('carta-error');
+  if (!cartaFile) return showErr('carta-error', 'Sube tu CV en PDF.');
+  const jobText = document.getElementById('carta-job-text').value.trim();
+  if (!jobText) return showErr('carta-error', 'Pega la descripción de la oferta.');
+
+  document.getElementById('carta-upload').style.display = 'none';
+  document.getElementById('carta-processing').classList.add('show');
+
+  try {
+    const data = await callOptimize(cartaFile, jobText);
+    document.getElementById('carta-text').textContent = data.carta_presentacion || 'No se pudo generar la carta.';
+    document.getElementById('carta-processing').classList.remove('show');
+    document.getElementById('carta-results').classList.add('show');
+  } catch (err) {
+    document.getElementById('carta-processing').classList.remove('show');
+    document.getElementById('carta-upload').style.display = 'block';
+    showErr('carta-error', err.message);
+  }
+});
+
+document.getElementById('carta-copy').addEventListener('click', () => {
+  const text = document.getElementById('carta-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('carta-copy');
+    btn.textContent = '✓ Copiada';
+    setTimeout(() => { btn.innerHTML = '📋 Copiar carta'; }, 2000);
+  });
+});
+
+document.getElementById('carta-reset').addEventListener('click', () => {
+  cartaFile = null;
+  document.getElementById('carta-file').value = '';
+  document.getElementById('carta-file-chosen').classList.remove('show');
+  document.getElementById('carta-job-text').value = '';
+  document.getElementById('carta-results').classList.remove('show');
+  document.getElementById('carta-upload').style.display = 'block';
+});
+
+// ── ENTREVISTA ────────────────────────────────────────────────────────────────
+let entFile = null;
+
+document.getElementById('ent-file').addEventListener('change', function() {
+  entFile = this.files[0];
+  if (entFile) { document.getElementById('ent-file-name').textContent = entFile.name; document.getElementById('ent-file-chosen').classList.add('show'); }
+});
+
+document.getElementById('ent-btn').addEventListener('click', async () => {
+  hideErr('ent-error');
+  if (!entFile) return showErr('ent-error', 'Sube tu CV en PDF.');
+  const jobText = document.getElementById('ent-job-text').value.trim();
+  if (!jobText) return showErr('ent-error', 'Pega la descripción de la oferta.');
+
+  document.getElementById('ent-upload').style.display = 'none';
+  document.getElementById('ent-processing').classList.add('show');
+
+  try {
+    const data = await callOptimize(entFile, jobText);
+    const preguntas = data.preguntas_entrevista || [];
+    document.getElementById('ent-questions').innerHTML = preguntas.map((q, i) => `
+      <div class="question-card">
+        <div class="question-num">Pregunta ${i + 1}</div>
+        <div class="question-text">${q}</div>
+      </div>
+    `).join('');
+    document.getElementById('ent-processing').classList.remove('show');
+    document.getElementById('ent-results').classList.add('show');
+  } catch (err) {
+    document.getElementById('ent-processing').classList.remove('show');
+    document.getElementById('ent-upload').style.display = 'block';
+    showErr('ent-error', err.message);
+  }
+});
+
+document.getElementById('ent-reset').addEventListener('click', () => {
+  entFile = null;
+  document.getElementById('ent-file').value = '';
+  document.getElementById('ent-file-chosen').classList.remove('show');
+  document.getElementById('ent-job-text').value = '';
+  document.getElementById('ent-results').classList.remove('show');
+  document.getElementById('ent-upload').style.display = 'block';
+});
+</script>
+
+</body>
+</html>

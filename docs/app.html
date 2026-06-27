@@ -719,12 +719,6 @@ function logout() {
 document.getElementById('btn-open-auth').addEventListener('click', () => {
   document.getElementById('modal-overlay').classList.add('show');
 });
-document.getElementById('modal-close').addEventListener('click', () => {
-  document.getElementById('modal-overlay').classList.remove('show');
-});
-document.getElementById('modal-overlay').addEventListener('click', e => {
-  if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
-});
 
 function switchTab(tab) {
   document.getElementById('form-login').style.display  = tab === 'login'  ? 'block' : 'none';
@@ -801,6 +795,23 @@ function showModalError(el, msg) {
 
 // Init nav on load
 renderNav();
+
+// If not logged in, open auth modal immediately
+if (!currentUser) {
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+// If modal closed without logging in, redirect home
+document.getElementById('modal-close').addEventListener('click', () => {
+  document.getElementById('modal-overlay').classList.remove('show');
+  if (!currentUser) window.location.href = 'index.html';
+});
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.classList.remove('show');
+    if (!currentUser) window.location.href = 'index.html';
+  }
+});
 
 let cvFile = null;
 let resultData = null;

@@ -662,9 +662,50 @@ footer p { font-size: .78rem; color: rgba(255,255,255,.3); }
   <ul class="nav-links">
     <li><a href="#como-funciona">Cómo funciona</a></li>
     <li><a href="#precios">Precios</a></li>
-    <li><a href="app.html" class="btn-nav">Empezar gratis</a></li>
+    <li><a id="nav-login-btn" href="#" onclick="openAuthModal();return false;" style="font-size:.875rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">Iniciar sesión</a></li>
+    <li><a href="#" onclick="goToApp();return false;" class="btn-nav">Empezar gratis</a></li>
   </ul>
 </nav>
+
+<!-- AUTH MODAL -->
+<div id="auth-overlay" style="display:none;position:fixed;inset:0;background:rgba(14,26,20,.55);z-index:500;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:20px;padding:2rem;width:100%;max-width:380px;position:relative;">
+    <button onclick="closeAuthModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#6B8F7A;">✕</button>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.25rem;color:#0E1A14;">Bienvenida</div>
+    <div style="color:#6B8F7A;font-size:.85rem;margin-bottom:1.5rem;">Accede para optimizar tu CV</div>
+
+    <div style="display:flex;gap:0;background:#F7FBF9;border-radius:10px;padding:4px;margin-bottom:1.5rem;">
+      <button id="idx-tab-login" onclick="idxSwitchTab('login')" style="flex:1;padding:7px;text-align:center;font-size:.82rem;font-weight:600;cursor:pointer;border-radius:7px;border:none;background:#fff;color:#0E1A14;box-shadow:0 1px 4px rgba(0,0,0,.08);font-family:'DM Sans',sans-serif;">Entrar</button>
+      <button id="idx-tab-signup" onclick="idxSwitchTab('signup')" style="flex:1;padding:7px;text-align:center;font-size:.82rem;font-weight:600;cursor:pointer;border-radius:7px;border:none;background:transparent;color:#6B8F7A;font-family:'DM Sans',sans-serif;">Crear cuenta</button>
+    </div>
+
+    <div id="idx-form-login">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block;font-size:.75rem;font-weight:600;color:#3DD68C;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;">Email</label>
+        <input type="email" id="idx-login-email" placeholder="tu@email.com" style="width:100%;background:#F7FBF9;border:1px solid #D6EDE3;border-radius:10px;padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:#0E1A14;outline:none;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block;font-size:.75rem;font-weight:600;color:#3DD68C;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;">Contraseña</label>
+        <input type="password" id="idx-login-password" placeholder="••••••••" style="width:100%;background:#F7FBF9;border:1px solid #D6EDE3;border-radius:10px;padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:#0E1A14;outline:none;">
+      </div>
+      <button onclick="idxLogin()" style="width:100%;background:#3DD68C;color:#0E1A14;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;padding:.85rem;border-radius:10px;border:none;cursor:pointer;margin-top:.5rem;">Entrar</button>
+      <div id="idx-login-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:.6rem .9rem;margin-top:.75rem;color:#E24B4A;font-size:.8rem;"></div>
+    </div>
+
+    <div id="idx-form-signup" style="display:none;">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block;font-size:.75rem;font-weight:600;color:#3DD68C;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;">Email</label>
+        <input type="email" id="idx-signup-email" placeholder="tu@email.com" style="width:100%;background:#F7FBF9;border:1px solid #D6EDE3;border-radius:10px;padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:#0E1A14;outline:none;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block;font-size:.75rem;font-weight:600;color:#3DD68C;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;">Contraseña (mín. 6 caracteres)</label>
+        <input type="password" id="idx-signup-password" placeholder="••••••••" style="width:100%;background:#F7FBF9;border:1px solid #D6EDE3;border-radius:10px;padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:#0E1A14;outline:none;">
+      </div>
+      <button onclick="idxSignup()" style="width:100%;background:#3DD68C;color:#0E1A14;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;padding:.85rem;border-radius:10px;border:none;cursor:pointer;margin-top:.5rem;">Crear cuenta</button>
+      <div id="idx-signup-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:.6rem .9rem;margin-top:.75rem;color:#E24B4A;font-size:.8rem;"></div>
+    </div>
+  </div>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -676,7 +717,7 @@ footer p { font-size: .78rem; color: rgba(255,255,255,.3); }
   <h1>Tu CV adaptado a<br/><mark>cada oferta</mark> en 2 minutos</h1>
   <p class="hero-sub">Pega el link de cualquier oferta de trabajo y la IA reescribe tu CV con las palabras clave exactas para pasar los filtros automáticos.</p>
   <div class="hero-actions">
-    <a href="app.html" class="btn-primary">Empieza gratis →</a>
+    <a href="#" onclick="goToApp();return false;" class="btn-primary">Empieza gratis →</a>
     <a href="#como-funciona" class="btn-ghost">Ver cómo funciona</a>
   </div>
   <p class="hero-note">Sin tarjeta de crédito &nbsp;·&nbsp; 1 prueba gratuita</p>
@@ -805,7 +846,7 @@ footer p { font-size: .78rem; color: rgba(255,255,255,.3); }
           <li class="dim">Simulacro de entrevista</li>
           <li class="dim">Adaptaciones ilimitadas</li>
         </ul>
-        <a href="app.html" class="plan-btn plan-btn-outline">Probar gratis</a>
+        <a href="#" onclick="goToApp();return false;" class="plan-btn plan-btn-outline">Probar gratis</a>
       </div>
 
       <div class="plan featured">
@@ -853,7 +894,7 @@ footer p { font-size: .78rem; color: rgba(255,255,255,.3); }
   <div class="cta-banner reveal">
     <h2>Tu próximo trabajo<br/>empieza aquí</h2>
     <p>Únete a miles de personas que ya consiguen más entrevistas con Leapseek.</p>
-    <a href="app.html" class="btn-dark">Empieza gratis hoy →</a>
+    <a href="#" onclick="goToApp();return false;" class="btn-dark">Empieza gratis hoy →</a>
   </div>
 
   <!-- WAITLIST POPUP -->
@@ -880,12 +921,87 @@ footer p { font-size: .78rem; color: rgba(255,255,255,.3); }
   </div>
 
   <script>
-  // Show popup after 8 seconds if not already seen
-  if (!sessionStorage.getItem('wl_seen')) {
-    setTimeout(() => {
-      document.getElementById('wl-overlay').style.display = 'flex';
-    }, 8000);
+  const API_BASE = 'https://leapseek-production.up.railway.app/api';
+
+  // Auth state
+  function getToken() { return localStorage.getItem('ls_token'); }
+  function getUser()  { return JSON.parse(localStorage.getItem('ls_user') || 'null'); }
+  function saveAuth(token, user) {
+    localStorage.setItem('ls_token', token);
+    localStorage.setItem('ls_user', JSON.stringify(user));
+    updateNav();
   }
+
+  function updateNav() {
+    const user = getUser();
+    const loginBtn = document.getElementById('nav-login-btn');
+    if (user && loginBtn) {
+      loginBtn.textContent = user.email;
+    }
+  }
+
+  function goToApp() {
+    if (getToken()) {
+      window.location.href = 'app.html';
+    } else {
+      openAuthModal();
+    }
+  }
+
+  function openAuthModal() {
+    document.getElementById('auth-overlay').style.display = 'flex';
+  }
+
+  function closeAuthModal() {
+    document.getElementById('auth-overlay').style.display = 'none';
+  }
+
+  document.getElementById('auth-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeAuthModal();
+  });
+
+  function idxSwitchTab(tab) {
+    document.getElementById('idx-form-login').style.display  = tab === 'login'  ? 'block' : 'none';
+    document.getElementById('idx-form-signup').style.display = tab === 'signup' ? 'block' : 'none';
+    document.getElementById('idx-tab-login').style.background  = tab === 'login'  ? '#fff' : 'transparent';
+    document.getElementById('idx-tab-login').style.color       = tab === 'login'  ? '#0E1A14' : '#6B8F7A';
+    document.getElementById('idx-tab-signup').style.background = tab === 'signup' ? '#fff' : 'transparent';
+    document.getElementById('idx-tab-signup').style.color      = tab === 'signup' ? '#0E1A14' : '#6B8F7A';
+  }
+
+  async function idxLogin() {
+    const email    = document.getElementById('idx-login-email').value.trim();
+    const password = document.getElementById('idx-login-password').value;
+    const errEl    = document.getElementById('idx-login-error');
+    errEl.style.display = 'none';
+    if (!email || !password) { errEl.textContent = '❌ Completa todos los campos'; errEl.style.display = 'block'; return; }
+    try {
+      const res  = await fetch(`${API_BASE}/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al entrar');
+      saveAuth(data.token, data.user);
+      window.location.href = 'app.html';
+    } catch(err) { errEl.textContent = '❌ ' + err.message; errEl.style.display = 'block'; }
+  }
+
+  async function idxSignup() {
+    const email    = document.getElementById('idx-signup-email').value.trim();
+    const password = document.getElementById('idx-signup-password').value;
+    const errEl    = document.getElementById('idx-signup-error');
+    errEl.style.display = 'none';
+    if (!email || !password) { errEl.textContent = '❌ Completa todos los campos'; errEl.style.display = 'block'; return; }
+    if (password.length < 6) { errEl.textContent = '❌ La contraseña debe tener al menos 6 caracteres'; errEl.style.display = 'block'; return; }
+    try {
+      const res  = await fetch(`${API_BASE}/auth/signup`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al registrarte');
+      saveAuth(data.token, data.user);
+      window.location.href = 'app.html';
+    } catch(err) { errEl.textContent = '❌ ' + err.message; errEl.style.display = 'block'; }
+  }
+
+  // Update nav on load
+  updateNav();
 
   function closeWaitlist() {
     document.getElementById('wl-overlay').style.display = 'none';

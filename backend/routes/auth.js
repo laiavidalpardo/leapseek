@@ -30,11 +30,7 @@ router.post('/signup', async (req, res) => {
     // Create user profile
     const { error: profileError } = await supabase
       .from('user_profiles')
-      .insert({
-        id: authData.user.id,
-        email,
-        plan: 'free'
-      });
+      .insert({ id: authData.user.id, email, plan: 'free' });
 
     if (profileError) throw profileError;
 

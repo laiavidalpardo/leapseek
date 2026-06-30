@@ -7,6 +7,7 @@ const { optimizeCV } = require('../utils/anthropic');
 const { extractTextFromPDF } = require('../utils/pdfToText');
 const { extractTextFromWord } = require('../utils/wordToText');
 const { generateOptimizedDocx } = require('../utils/docxGenerator');
+const { calculateATSScore } = require('../utils/scoring');
 
 const router = express.Router();
 const upload = multer({
@@ -109,8 +110,13 @@ router.post('/', upload.single('cv'), async (req, res) => {
     // Optimize CV with Anthropic
     const result = await optimizeCV(cvText, jobText, isPro, model, interviewLanguage || null);
 
-    // Ensure keywords is an array of max 8
-    if (Array.isArray(result.keywords)) {
+    // Override AI scores with real mathematical ATS scoring
+    if (result.cv_optimizado) {
+      const atsScores = calculateATSScore(cvText, result.cv_optimizado, jobText);
+      result.score_antes   = atsScores.score_antes;
+      result.score_despues = atsScores.score_despues;
+      result.keywords      = atsScores.keywords;
+    } else if (Array.isArray(result.keywords)) {
       result.keywords = result.keywords.slice(0, 8);
     } else {
       result.keywords = [];

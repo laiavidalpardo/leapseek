@@ -19,10 +19,7 @@ Detecta el idioma de la oferta de trabajo. Toda la respuesta (CV optimizado, car
 PASO 2 — ANÁLISIS DE LA OFERTA:
 Extrae TODAS las palabras clave ATS: skills técnicos, soft skills, certificaciones, herramientas, metodologías, títulos exactos del puesto. Sé exhaustivo.
 
-PASO 3 — SCORE ANTES:
-Calcula el score ATS del CV original (0-100). Sé realista y estricto.
-
-PASO 4 — OPTIMIZACIÓN AGRESIVA DEL CV:
+PASO 3 — OPTIMIZACIÓN AGRESIVA DEL CV:
 Reescribe el CV completo siguiendo estas reglas estrictas:
 
 ESTRUCTURA (en este orden exacto):
@@ -51,16 +48,13 @@ REGLAS DE CONTENIDO:
 - Incorpora TODAS las keywords relevantes de la oferta de forma natural
 - Objetivo: llegar al 85% o más de match ATS
 
-PASO 5 — SCORE DESPUÉS:
-Calcula el score ATS del CV optimizado. Debe ser notablemente más alto que el anterior.
-
 RESPONDE ÚNICAMENTE con un objeto JSON válido. Sin texto adicional, sin markdown, sin bloques de código:
 {
   "incompatible": false,
   "aviso": "",
-  "score_antes": 45,
-  "score_despues": 87,
-  "keywords": ["keyword1", "keyword2"],
+  "score_antes": 0,
+  "score_despues": 0,
+  "keywords": [],
   "cv_optimizado": "CV completo reescrito aquí",
   "carta_presentacion": "",
   "preguntas_entrevista": []
@@ -81,7 +75,7 @@ Cuando sea incompatible:
   if (isPro) {
     return base + `
 
-PASO 6 — CARTA DE PRESENTACIÓN:
+PASO 4 — CARTA DE PRESENTACIÓN:
 Escribe una carta profesional de 4 párrafos en el MISMO IDIOMA que la oferta.
 
 ESTRUCTURA:
@@ -99,8 +93,8 @@ PROHIBIDO usar estas frases (son clichés que hacen que la carta parezca generad
 
 El tono debe sonar como una persona real hablando con otra persona real. Si la empresa es una startup, escribe con energía y directez. Si es más corporativa, ajusta el tono. MAX 4 párrafos. Sin relleno.
 
-PASO 7 — PREGUNTAS DE ENTREVISTA:
-Genera exactamente 8 preguntas de entrevista específicas para ese puesto en el MISMO IDIOMA que la oferta. Mezcla: preguntas técnicas del rol, preguntas de comportamiento (método STAR) y una pregunta sobre motivación.
+PASO 5 — PREGUNTAS DE ENTREVISTA:
+Genera exactamente 6 preguntas de entrevista específicas para ese puesto en el MISMO IDIOMA que la oferta. Mezcla: 2 preguntas técnicas del rol, 3 preguntas de comportamiento (método STAR) y 1 pregunta sobre motivación concreta para ESA empresa.
 
 El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
   }

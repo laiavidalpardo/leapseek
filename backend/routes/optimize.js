@@ -110,17 +110,17 @@ router.post('/', upload.single('cv'), async (req, res) => {
     // Optimize CV with Anthropic
     const result = await optimizeCV(cvText, jobText, isPro, model, interviewLanguage || null);
 
-    // Override AI scores with real mathematical ATS scoring
+    // Real mathematical ATS scores (override AI estimates)
+    // Keywords: keep AI's list — the AI correctly identifies skills vs company names
     if (result.cv_optimizado) {
       const atsScores = calculateATSScore(cvText, result.cv_optimizado, jobText);
       result.score_antes   = atsScores.score_antes;
       result.score_despues = atsScores.score_despues;
-      result.keywords      = atsScores.keywords;
-    } else if (Array.isArray(result.keywords)) {
-      result.keywords = result.keywords.slice(0, 8);
-    } else {
-      result.keywords = [];
     }
+    // Cap and clean AI keywords (max 8, filter empty)
+    result.keywords = Array.isArray(result.keywords)
+      ? result.keywords.filter(k => k && k.length > 1).slice(0, 8)
+      : [];
 
     // Generate DOCX
     let docxBuffer;

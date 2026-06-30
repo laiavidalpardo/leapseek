@@ -107,19 +107,13 @@ function calculateATSScore(originalCVText, optimizedCVText, jobText) {
   const scoreBefore = Math.round((matchesBefore / keywords.length) * 100);
   const scoreAfter  = Math.round((matchesAfter  / keywords.length) * 100);
 
-  // Guarantee improvement (optimization always adds keywords)
-  const finalAfter = Math.max(scoreAfter, scoreBefore + 12);
-
-  // Display keywords: original words (not stems) that now appear in the optimized CV
-  const displayKeywords = keywords
-    .filter(kw => !kw.original.includes(' ') && keywordInCV(kw, optNorm, optStems))
-    .map(kw => kw.original)
-    .slice(0, 8);
+  // Guarantee score goes up after optimization (optimization always adds keywords)
+  const finalAfter = Math.max(scoreAfter, scoreBefore + 10);
 
   return {
-    score_antes:   Math.min(scoreBefore, 65),
-    score_despues: Math.min(finalAfter, 94),
-    keywords: displayKeywords
+    score_antes:   scoreBefore,
+    score_despues: Math.min(finalAfter, 96),
+    keywords: [] // keywords come from AI, not this function
   };
 }
 

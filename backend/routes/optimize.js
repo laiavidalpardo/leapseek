@@ -138,7 +138,8 @@ router.post('/', upload.single('cv'), async (req, res) => {
     res.json({
       ...result,
       docx_base64: docxBuffer.toString('base64'),
-      docx_filename: 'cv_optimizado.docx'
+      docx_filename: 'cv_optimizado.docx',
+      _model: model
     });
 
   } catch (err) {

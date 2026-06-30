@@ -76,22 +76,18 @@ Cuando sea incompatible:
     return base + `
 
 PASO 4 — CARTA DE PRESENTACIÓN:
-Escribe una carta profesional de 4 párrafos en el MISMO IDIOMA que la oferta.
+IDIOMA: La carta DEBE estar escrita en el MISMO IDIOMA que la oferta de trabajo detectado en PASO 1. Si la oferta está en español → carta en español. Si la oferta está en inglés → carta en inglés. No mezcles idiomas.
 
-ESTRUCTURA:
-- Párrafo 1: Conecta directamente con la empresa. Muestra que has leído la oferta. Menciona algo específico de la empresa o del rol que demuestre interés genuino.
-- Párrafos 2-3: Relaciona los 2-3 logros más relevantes del candidato con las necesidades concretas de la empresa. Habla de impacto y resultados, no de responsabilidades.
-- Párrafo 4: Cierre directo y confiado con llamada a la acción. Sin frases genéricas.
+ESTRUCTURA (4 párrafos):
+- Párrafo 1: Conecta directamente con la empresa. Menciona algo específico del rol o la empresa que demuestre que has leído la oferta. Nada genérico.
+- Párrafos 2-3: Relaciona 2-3 logros concretos del candidato con las necesidades de la empresa. Impacto y resultados, no tareas.
+- Párrafo 4: Cierre directo con llamada a la acción. Confiado, no servil.
 
-PROHIBIDO usar estas frases (son clichés que hacen que la carta parezca generada por IA):
-- "Me dirijo a ustedes para expresar mi interés" / "I am writing to express my interest"
-- "Soy una persona apasionada" / "I am passionate about"
-- "Creo que sería un gran candidato" / "I would be a great fit"
-- "Quedo a su disposición" / "I look forward to hearing from you"
-- "Adjunto mi CV para su consideración"
-- "Estoy seguro/a de que mis habilidades..."
+PROHIBIDO (hacen que suene a IA genérica):
+Si está en español: "Me dirijo a ustedes para expresar mi interés", "Soy una persona apasionada por", "Creo que encajaría perfectamente", "Quedo a su disposición", "Adjunto mi CV", "Estoy convencido/a de que mis habilidades"
+Si está en inglés: "I am writing to express my interest", "I am passionate about", "I would be a great fit", "I look forward to hearing from you", "Please find attached my CV", "I am confident that my skills"
 
-El tono debe sonar como una persona real hablando con otra persona real. Si la empresa es una startup, escribe con energía y directez. Si es más corporativa, ajusta el tono. MAX 4 párrafos. Sin relleno.
+Tono: persona real hablando con persona real. Startup = directo y con energía. Corporativo = profesional pero no robótico. MAX 4 párrafos.
 
 PASO 5 — PREGUNTAS DE ENTREVISTA:
 Genera exactamente 6 preguntas de entrevista específicas para ese puesto en el MISMO IDIOMA que la oferta. Mezcla: 2 preguntas técnicas del rol, 3 preguntas de comportamiento (método STAR) y 1 pregunta sobre motivación concreta para ESA empresa.

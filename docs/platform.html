@@ -305,10 +305,12 @@ textarea.job-input::placeholder { color: var(--muted); }
         <div class="upload-grid">
           <div>
             <div class="upload-zone" onclick="document.getElementById('opt-file').click()">
-              <input type="file" id="opt-file" accept=".pdf">
-              <div class="upload-icon">📎</div>
+              <input type="file" id="opt-file" accept=".pdf,.doc,.docx">
+              <div class="upload-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              </div>
               <div class="upload-label">
-                <strong>Sube tu CV</strong>PDF · máx. 5 MB
+                <strong>Sube tu CV</strong>PDF o Word · máx. 10 MB
               </div>
             </div>
             <div class="file-chosen" id="opt-file-chosen">✓ <span id="opt-file-name"></span></div>
@@ -519,7 +521,7 @@ document.getElementById('opt-file').addEventListener('change', function() {
 
 document.getElementById('opt-btn').addEventListener('click', async () => {
   hideErr('opt-error');
-  if (!optFile) return showErr('opt-error', 'Sube tu CV en PDF.');
+  if (!optFile) return showErr('opt-error', 'Sube tu CV en PDF o Word.');
   const jobText = document.getElementById('opt-job-text').value.trim();
   if (!jobText) return showErr('opt-error', 'Pega la descripción de la oferta.');
 

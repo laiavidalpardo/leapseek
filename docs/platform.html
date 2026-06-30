@@ -356,7 +356,9 @@ textarea.job-input::placeholder { color: var(--muted); }
           <div id="opt-cv-text" style="font-size:.85rem;line-height:1.65;white-space:pre-wrap;max-height:320px;overflow-y:auto;color:var(--text);"></div>
         </div>
         <div class="actions-row" style="margin-top:1rem;">
-          <button class="btn-primary" id="opt-download">⬇️ Descargar PDF</button>
+          <button class="btn-primary" id="opt-download">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar Word (.docx)
+          </button>
           <button class="btn-secondary" id="opt-reset">↩ Nueva optimización</button>
         </div>
       </div>
@@ -461,7 +463,7 @@ let sharedPdf    = null;
 
 function applySharedResults(data) {
   sharedResult = data;
-  sharedPdf    = data.pdf_base64;
+  sharedPdf    = data.docx_base64;
 
   // Populate carta
   const cartaText = data.carta_presentacion || '';
@@ -560,8 +562,8 @@ document.getElementById('opt-btn').addEventListener('click', async () => {
 document.getElementById('opt-download').addEventListener('click', () => {
   if (!sharedPdf) return;
   const link = document.createElement('a');
-  link.href = 'data:application/pdf;base64,' + sharedPdf;
-  link.download = 'cv_optimizado.pdf';
+  link.href = 'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,' + sharedPdf;
+  link.download = 'cv_optimizado.docx';
   link.click();
 });
 

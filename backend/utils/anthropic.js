@@ -39,7 +39,10 @@ REGLAS DE CONTENIDO:
 - ELIMINA: fecha de nacimiento, dirección completa (solo ciudad/país), carnet de conducir (salvo que la oferta lo pida), foto
 - ELIMINA: descripciones de la empresa debajo de cada trabajo
 - ELIMINA: secciones de "Competencias" o "Soft Skills" genéricas — integra lo relevante en el resumen
-- BULLET POINTS: máximo 2 líneas cada uno, empezar con verbo de acción, cuantificar logros con números siempre que sea posible
+- BULLET POINTS: máximo 2 líneas cada uno, empezar con verbo de acción fuerte (lideré, desarrollé, implementé, reduje, incrementé, definí, lancé, automaticé, gestioné, diseñé — o en inglés: led, drove, owned, shipped, built, reduced, increased, launched, designed, defined, aligned)
+- CUANTIFICA siempre que sea posible: no "mejoré el proceso" sino "reduje el tiempo de proceso un 35%" o "gestioné un equipo de 8 personas"
+- ENFOQUE EN IMPACTO Y RESULTADOS, no en tareas. No "fui responsable de X" sino "logré X resultado haciendo Y"
+- REENCUADRA la experiencia del candidato usando el lenguaje de la oferta. Si la oferta habla de "customer success" y el candidato tenía "atención al cliente", usa "customer success"
 - HABILIDADES: máximo 12 skills, los más relevantes para ESA oferta concreta. Formato lista separada por · no párrafos largos
 - FECHAS: formato consistente (ej: "Enero 2020 – Presente" o "Jan 2020 – Present")
 - ACRÓNIMOS: la primera vez escribe el nombre completo seguido del acrónimo entre paréntesis (ej: "Software-in-the-Loop (SiL)")
@@ -79,7 +82,22 @@ Cuando sea incompatible:
     return base + `
 
 PASO 6 — CARTA DE PRESENTACIÓN:
-Escribe una carta profesional de 3-4 párrafos en el MISMO IDIOMA que la oferta. Estructura: párrafo 1 presenta al candidato y el puesto, párrafo 2-3 relaciona sus logros más relevantes con las necesidades de la empresa, párrafo 4 cierra con llamada a la acción.
+Escribe una carta profesional de 4 párrafos en el MISMO IDIOMA que la oferta.
+
+ESTRUCTURA:
+- Párrafo 1: Conecta directamente con la empresa. Muestra que has leído la oferta. Menciona algo específico de la empresa o del rol que demuestre interés genuino.
+- Párrafos 2-3: Relaciona los 2-3 logros más relevantes del candidato con las necesidades concretas de la empresa. Habla de impacto y resultados, no de responsabilidades.
+- Párrafo 4: Cierre directo y confiado con llamada a la acción. Sin frases genéricas.
+
+PROHIBIDO usar estas frases (son clichés que hacen que la carta parezca generada por IA):
+- "Me dirijo a ustedes para expresar mi interés" / "I am writing to express my interest"
+- "Soy una persona apasionada" / "I am passionate about"
+- "Creo que sería un gran candidato" / "I would be a great fit"
+- "Quedo a su disposición" / "I look forward to hearing from you"
+- "Adjunto mi CV para su consideración"
+- "Estoy seguro/a de que mis habilidades..."
+
+El tono debe sonar como una persona real hablando con otra persona real. Si la empresa es una startup, escribe con energía y directez. Si es más corporativa, ajusta el tono. MAX 4 párrafos. Sin relleno.
 
 PASO 7 — PREGUNTAS DE ENTREVISTA:
 Genera exactamente 8 preguntas de entrevista específicas para ese puesto en el MISMO IDIOMA que la oferta. Mezcla: preguntas técnicas del rol, preguntas de comportamiento (método STAR) y una pregunta sobre motivación.

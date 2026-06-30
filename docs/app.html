@@ -731,7 +731,7 @@
 
     <div class="actions">
       <button class="btn-action btn-download" id="btn-download">
-        <span>⬇️</span> Descargar PDF
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar Word (.docx)
       </button>
       <button class="btn-action btn-reset" id="btn-reset">
         <span>↩</span> Nuevo
@@ -980,7 +980,7 @@ async function optimize() {
     }
 
     resultData = await response.json();
-    pdfBase64 = resultData.pdf_base64;
+    pdfBase64 = resultData.docx_base64;
 
     // Perfil incompatible con la oferta
     if (resultData.incompatible) {
@@ -1015,8 +1015,8 @@ async function optimize() {
 document.getElementById('btn-download').addEventListener('click', () => {
   if (!pdfBase64) return;
   const link = document.createElement('a');
-  link.href = 'data:application/pdf;base64,' + pdfBase64;
-  link.download = 'cv_optimizado.pdf';
+  link.href = 'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,' + pdfBase64;
+  link.download = 'cv_optimizado.docx';
   link.click();
 });
 

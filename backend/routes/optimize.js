@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const { optimizeCV } = require('../utils/anthropic');
 const { extractTextFromPDF } = require('../utils/pdfToText');
 const { extractTextFromWord } = require('../utils/wordToText');
-const { generateOptimizedPDF } = require('../utils/pdfGenerator');
+const { generateOptimizedDocx } = require('../utils/docxGenerator');
 
 const router = express.Router();
 const upload = multer({
@@ -116,24 +116,23 @@ router.post('/', upload.single('cv'), async (req, res) => {
       result.keywords = [];
     }
 
-    // Generate PDF
-    let pdfBuffer;
+    // Generate DOCX
+    let docxBuffer;
     try {
-      pdfBuffer = await generateOptimizedPDF(result, req.file.originalname);
+      docxBuffer = await generateOptimizedDocx(result);
     } catch (err) {
-      console.error('PDF generation error:', err);
-      // Still return result even if PDF fails
+      console.error('DOCX generation error:', err);
       return res.json({
         ...result,
-        pdf_error: 'Could not generate PDF'
+        docx_error: 'Could not generate DOCX'
       });
     }
 
-    // Return result with PDF as base64
+    // Return result with DOCX as base64
     res.json({
       ...result,
-      pdf_base64: pdfBuffer.toString('base64'),
-      pdf_filename: 'cv_optimizado.pdf'
+      docx_base64: docxBuffer.toString('base64'),
+      docx_filename: 'cv_optimizado.docx'
     });
 
   } catch (err) {

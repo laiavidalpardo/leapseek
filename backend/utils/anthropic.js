@@ -18,13 +18,15 @@ async function analyzeJobOffer(jobText) {
       content: `Analiza esta oferta de trabajo y devuelve este JSON exacto:
 {
   "language": "español",
-  "keywords": ["skill1", "skill2"],
+  "keywords_ats": ["skill1", "herramienta2"],
+  "keywords_humanas": ["verbo o frase que usa la empresa"],
   "key_phrases": ["frase clave 1", "frase clave 2"]
 }
 
 Reglas:
 - language: el idioma principal de la oferta ("español", "english", u otro)
-- keywords: máximo 8 skills/herramientas/metodologías reales que el ATS buscará. NUNCA nombres de empresa, ciudades ni palabras genéricas como "experiencia" o "equipo"
+- keywords_ats: máximo 8 términos que un ATS (una máquina) escanea: títulos de rol, nombres de herramientas, tecnologías, metodologías. NUNCA nombres de empresa, ciudades ni genéricos como "experiencia" o "equipo"
+- keywords_humanas: máximo 6 señales de que el candidato ha LEÍDO la oferta: verbos de acción que usa la empresa, nombres de producto, lenguaje de resultado, forma de referirse al equipo. Demuestran a una persona (no a la máquina) que encaja
 - key_phrases: 3-5 frases específicas del puesto que conviene usar literalmente en el CV (ej: "stakeholder alignment", "test automation", "go-to-market strategy")
 
 OFERTA:
@@ -52,11 +54,18 @@ REGLAS DE REDACCIÓN:
 - Cada bullet responde: ¿qué hice? ¿cómo? ¿qué resultado tuvo? — no solo lista tareas
 - Prohibido: "team player", "fast learner", "passionate about", "responsible for", "in charge of", "encargado de", "responsable de"
 - Usa el VOCABULARIO EXACTO de la oferta y las frases clave proporcionadas, no sinónimos aproximados
+- DISTRIBUCIÓN de keywords ATS: coloca las 5 más importantes en el RESUMEN, una keyword relevante en el PRIMER bullet de cada puesto, y el resto en HABILIDADES. Cada keyword una sola vez; si no encaja de forma natural, no la fuerces
 - Varía la longitud y estructura de los bullets — no todos empiecen igual ni tengan la misma cadencia
 
-HUMANIZACIÓN (crítico — el texto NO debe parecer escrito por IA):
-Palabras y frases que NUNCA debes usar porque delatan escritura artificial:
-"leverage", "utilize", "endeavor", "robust", "seamlessly", "cutting-edge", "game-changing", "synergy", "paradigm", "holistic", "proactive", "spearheaded", "dynamic", "innovative", "passionate", "strategic thinker", "results-driven", "detail-oriented", "highly motivated", "aprovechar", "robusto", "sinergias", "innovador", "soluciones innovadoras", "entorno dinámico", "orientado a resultados", "altamente motivado"
+HUMANIZACIÓN — DOS NIVELES (crítico, el texto NO debe parecer escrito por IA):
+
+NIVEL 1 (aplica a TODO: CV y carta) — palabras y frases PROHIBIDAS porque delatan IA al instante:
+"leverage", "utilize", "endeavor", "robust", "seamless", "seamlessly", "cutting-edge", "game-changing", "synergy", "synergies", "paradigm", "holistic", "proactive", "spearheaded", "championed", "orchestrated", "dynamic", "innovative", "passionate", "excited", "strategic thinker", "results-driven", "detail-oriented", "highly motivated", "data-driven", "actionable insights", "move the needle", "north star", "stakeholder alignment", "unique opportunity", "perfect fit", "strong track record", "proven track record", "best practices", "aprovechar", "robusto", "sinergias", "innovador", "soluciones innovadoras", "entorno dinámico", "orientado a resultados", "altamente motivado", "apasionado", "capacidad demostrada de"
+Además: PROHIBIDO el guion largo (—) y el punto y coma (;). Usa comas, puntos y frases más cortas. Nadie escribe a mano con guion largo ni con punto y coma: delatan IA al instante.
+
+NIVEL 2 (aplica SOLO a la carta, NUNCA al CV) — voz conversacional: contracciones, alguna frase que empiece por "Y" o "Pero", tono directo y natural. El CV va nítido y factual; la carta suena más humana.
+
+REGLA QUE MANDA SIEMPRE: la precisión gana al estilo. Nunca inventes ni adornes un hecho para que suene mejor.
 
 En su lugar, sé directo y específico:
 - NO: "Leveraged cross-functional synergies to drive robust outcomes"
@@ -91,6 +100,7 @@ ESTRUCTURA DEL CV (en este orden exacto):
 
 REGLAS ADICIONALES:
 - USA el título exacto del puesto en el resumen
+- Dentro de cada puesto, ordena los bullets poniendo PRIMERO el más relevante para ESTA oferta. Mantén los puestos en orden cronológico inverso (no cambies fechas)
 - ELIMINA: fecha de nacimiento, dirección completa, carnet de conducir (salvo que la oferta lo pida), foto, descripciones de empresa, secciones genéricas de soft skills
 - HABILIDADES: máximo 12 skills relevantes. Lista separada por · no párrafos
 - FECHAS: formato consistente
@@ -141,6 +151,12 @@ PROHIBIDO (delatan IA al instante):
 
 MAX 4 párrafos. Sin adornos. Sin relleno. Cada frase tiene que justificar su presencia.
 
+PUNTUACIÓN (crítico en la carta): PROHIBIDO usar el guion largo (—) y el punto y coma (;). Una persona normal escribiendo una carta no los usa. Sustitúyelos SIEMPRE por un punto y una frase nueva, o por una coma. Si te sale un punto y coma, parte la frase en dos.
+
+LONGITUD: cuerpo de 350-420 palabras. Ni más (delata relleno) ni mucho menos (parece plantilla).
+
+SELF-CHECK FINAL (obligatorio antes de dar la carta por buena): re-lee cada frase y pregúntate "¿esta frase valdría para CUALQUIER carta a CUALQUIER empresa?". Si la respuesta es sí, reescríbela para que sea específica de este candidato y esta oferta.
+
 PREGUNTAS DE ENTREVISTA:
 Genera exactamente 6 preguntas específicas para el puesto en el MISMO IDIOMA de la oferta.
 Mezcla: 2 técnicas del rol, 3 de comportamiento (método STAR), 1 de motivación concreta para ESA empresa.
@@ -151,19 +167,25 @@ El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
   return base;
 }
 
-async function generateCV(cvText, jobText, analysis, isPro, interviewLanguage = null) {
-  const { language, keywords, key_phrases } = analysis;
+async function generateCV(cvText, jobText, analysis, isPro, interviewLanguage = null, extraSkills = []) {
+  const { language, keywords_ats = [], keywords_humanas = [], key_phrases = [] } = analysis;
 
   const langNote = interviewLanguage && interviewLanguage !== 'auto'
     ? `\nNOTA: Las preguntas de entrevista deben estar en este idioma: ${interviewLanguage}. El CV y la carta siguen en ${language}.`
     : '';
 
+  // Skills the user has CONFIRMED they have (from the "keywords que faltan" step).
+  const extraBlock = Array.isArray(extraSkills) && extraSkills.length
+    ? `\n\nEXPERIENCIA CONFIRMADA POR EL CANDIDATO (el usuario ha confirmado que SÍ tiene experiencia real con esto — incorpóralo de forma honesta y natural en el resumen, en habilidades y en el bullet donde mejor encaje; NO exageres ni inventes detalles que no se deduzcan): ${extraSkills.join(', ')}`
+    : '';
+
   const contextBlock = `CONTEXTO PRE-ANALIZADO (usa esto directamente, no lo re-analices):
 - Idioma de la oferta: ${language}
-- Keywords ATS críticos: ${keywords.join(', ')}
-- Frases clave a incorporar: ${(key_phrases || []).join(', ')}
+- Keywords ATS (para la máquina — repártelas en resumen, habilidades y el primer bullet de cada puesto): ${keywords_ats.join(', ')}
+- Señales humanas (para el reclutador — úsalas sobre todo en la carta): ${keywords_humanas.join(', ')}
+- Frases clave a incorporar literalmente: ${key_phrases.join(', ')}
 
-Toda la respuesta (CV, carta, preguntas) debe estar en: ${language}${langNote}`;
+Toda la respuesta (CV, carta, preguntas) debe estar en: ${language}${langNote}${extraBlock}`;
 
   const response = await client.messages.create({
     model: MODEL_WRITER,

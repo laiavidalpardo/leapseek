@@ -321,6 +321,37 @@
       font-weight: 600;
       padding: 4px 12px;
     }
+    /* MISSING KEYWORDS (¿las tienes?) */
+    .missing-hint {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    .kw-tag.selectable {
+      background: transparent;
+      color: var(--text);
+      border: 1px dashed var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: all .15s ease;
+    }
+    .kw-tag.selectable::before {
+      content: '+ ';
+      opacity: .6;
+    }
+    .kw-tag.selectable:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .kw-tag.selectable.selected {
+      background: rgba(61,214,140,.15);
+      color: var(--green);
+      border: 1px solid var(--green);
+    }
+    .kw-tag.selectable.selected::before {
+      content: '✓ ';
+    }
 
     /* ACTIONS */
     .actions {
@@ -724,6 +755,13 @@
       <div class="kw-tags" id="kw-tags"></div>
     </div>
 
+    <div class="keywords-card" id="missing-card" style="display:none;">
+      <h3>➕ ¿Tienes experiencia con alguna de estas?</h3>
+      <p class="missing-hint">Están en la oferta pero no en tu CV. Marca solo las que tengas de verdad y las incorporamos (no inventamos nada).</p>
+      <div class="kw-tags" id="missing-tags"></div>
+      <button class="btn-action btn-download" id="btn-add-keywords" style="display:none; margin-top:1.2rem; max-width:280px;">Añadir al CV y recalcular</button>
+    </div>
+
     <div class="card">
       <h3 style="font-size: 0.95rem; margin-bottom: 1rem;">CV Optimizado</h3>
       <div id="cv-text" style="font-size: 0.85rem; line-height: 1.6; white-space: pre-wrap; max-height: 300px; overflow-y: auto; color: var(--text);"></div>
@@ -953,21 +991,35 @@ function checkReady() {
   document.getElementById('btn-optimize').disabled = !(cvFile && text.length > 50);
 }
 
-document.getElementById('btn-optimize').addEventListener('click', optimize);
+document.getElementById('btn-optimize').addEventListener('click', () => optimize());
+
+let lastJobText = '';
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
 
 async function optimize() {
   hideError();
   const jobText = document.getElementById('job-text').value.trim();
   if (!cvFile || !jobText) return;
+  lastJobText = jobText;
+  await runOptimize([]);
+}
 
+async function runOptimize(extraSkills) {
+  hideError();
   document.getElementById('upload-section').style.display = 'none';
-  document.getElementById('processing').classList.add('show');
   document.getElementById('results').classList.remove('show');
+  document.getElementById('processing').classList.add('show');
 
   try {
     const formData = new FormData();
     formData.append('cv', cvFile);
-    formData.append('jobText', jobText);
+    formData.append('jobText', lastJobText);
+    if (extraSkills && extraSkills.length) {
+      formData.append('extraSkills', JSON.stringify(extraSkills));
+    }
 
     const response = await fetch(`${API_BASE}/optimize`, {
       method: 'POST',
@@ -995,9 +1047,11 @@ async function optimize() {
     document.getElementById('score-after').textContent = (resultData.score_despues || 0) + '%';
 
     const keywords = (resultData.keywords || []).slice(0, 8);
-    document.getElementById('kw-tags').innerHTML = keywords.map(k => `<span class="kw-tag">${k}</span>`).join('');
+    document.getElementById('kw-tags').innerHTML = keywords.map(k => `<span class="kw-tag">${escapeHtml(k)}</span>`).join('');
 
     document.getElementById('cv-text').textContent = resultData.cv_optimizado || '';
+
+    renderMissing(resultData.missing_keywords || []);
 
     document.getElementById('processing').classList.remove('show');
     document.getElementById('results').classList.add('show');
@@ -1012,6 +1066,38 @@ async function optimize() {
   }
 }
 
+function renderMissing(missing) {
+  const card   = document.getElementById('missing-card');
+  const tags   = document.getElementById('missing-tags');
+  const addBtn = document.getElementById('btn-add-keywords');
+
+  if (!missing || missing.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+
+  tags.innerHTML = missing.map(k =>
+    `<span class="kw-tag selectable" data-kw="${escapeHtml(k)}">${escapeHtml(k)}</span>`
+  ).join('');
+  addBtn.style.display = 'none';
+  card.style.display = 'block';
+
+  tags.querySelectorAll('.kw-tag.selectable').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('selected');
+      const anySelected = tags.querySelectorAll('.kw-tag.selected').length > 0;
+      addBtn.style.display = anySelected ? 'flex' : 'none';
+    });
+  });
+}
+
+document.getElementById('btn-add-keywords').addEventListener('click', async () => {
+  const selected = Array.from(document.querySelectorAll('#missing-tags .kw-tag.selected'))
+    .map(el => el.getAttribute('data-kw'));
+  if (selected.length === 0) return;
+  await runOptimize(selected);
+});
+
 document.getElementById('btn-download').addEventListener('click', () => {
   if (!pdfBase64) return;
   const link = document.createElement('a');
@@ -1024,11 +1110,13 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   cvFile = null;
   resultData = null;
   pdfBase64 = null;
+  lastJobText = '';
   fileInput.value = '';
   fileChosen.classList.remove('show');
   document.getElementById('job-text').value = '';
   document.getElementById('results').classList.remove('show');
   document.getElementById('upsell-card').style.display = 'none';
+  document.getElementById('missing-card').style.display = 'none';
   document.getElementById('upload-section').style.display = 'block';
   checkReady();
   window.scrollTo({ top: 0, behavior: 'smooth' });

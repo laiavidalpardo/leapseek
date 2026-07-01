@@ -7,7 +7,7 @@ const { analyzeJobOffer, generateCV } = require('../utils/anthropic');
 const { extractTextFromPDF } = require('../utils/pdfToText');
 const { extractTextFromWord } = require('../utils/wordToText');
 const { generateOptimizedDocx } = require('../utils/docxGenerator');
-const { calculateATSScore } = require('../utils/scoring');
+const { calculateATSScore, findMissingKeywords } = require('../utils/scoring');
 
 const router = express.Router();
 const upload = multer({
@@ -73,6 +73,18 @@ router.post('/', upload.single('cv'), async (req, res) => {
   try {
     const { jobText, interviewLanguage } = req.body;
 
+    // Skills the user confirmed they have (from the "keywords que faltan" step).
+    // Comes as a JSON array string or comma-separated list.
+    let extraSkills = [];
+    if (req.body.extraSkills) {
+      try {
+        const parsed = JSON.parse(req.body.extraSkills);
+        extraSkills = Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        extraSkills = String(req.body.extraSkills).split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+
     if (!req.file) {
       return res.status(400).json({ error: 'No CV file provided' });
     }
@@ -106,12 +118,12 @@ router.post('/', upload.single('cv'), async (req, res) => {
     // LLAMADA 1 — Haiku: analiza la oferta (idioma + keywords)
     const analysis = await analyzeJobOffer(jobText);
 
-    // LLAMADA 2 — Sonnet: escribe el CV con el contexto ya preparado
-    const result = await generateCV(cvText, jobText, analysis, isPro, interviewLanguage || null);
+    // LLAMADA 2 — Sonnet: escribe el CV con el contexto ya preparado (+ skills confirmados)
+    const result = await generateCV(cvText, jobText, analysis, isPro, interviewLanguage || null, extraSkills);
 
-    // Keywords: use the ones from Call 1 (Haiku analysis — correct, no company names)
-    result.keywords = Array.isArray(analysis.keywords)
-      ? analysis.keywords.filter(k => k && k.length > 1).slice(0, 8)
+    // Keywords: use the ATS ones from Call 1 (Haiku analysis — correct, no company names)
+    result.keywords = Array.isArray(analysis.keywords_ats)
+      ? analysis.keywords_ats.filter(k => k && k.length > 1).slice(0, 8)
       : [];
 
     // ATS scores: real mathematical calculation
@@ -120,6 +132,12 @@ router.post('/', upload.single('cv'), async (req, res) => {
       result.score_antes   = atsScores.score_antes;
       result.score_despues = atsScores.score_despues;
     }
+
+    // Keywords que faltan: keywords de la oferta que NO están en el CV optimizado.
+    // Se muestran al usuario para que confirme si tiene experiencia con ellas.
+    result.missing_keywords = result.cv_optimizado
+      ? findMissingKeywords(result.cv_optimizado, result.keywords)
+      : [];
 
     // Generate DOCX
     let docxBuffer;

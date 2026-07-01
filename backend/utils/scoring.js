@@ -117,4 +117,32 @@ function calculateATSScore(originalCVText, optimizedCVText, jobText) {
   };
 }
 
-module.exports = { calculateATSScore };
+// Given the optimized CV text and a list of offer keywords, return the ones
+// that do NOT appear in the CV. These are shown to the user as "do you have this?".
+function findMissingKeywords(cvText, keywords) {
+  if (!Array.isArray(keywords) || !cvText) return [];
+  const cvNorm = normalize(cvText).replace(/[^\w\s]/g, ' ');
+  const cvStems = new Set(cvNorm.split(/\s+/).filter(w => w.length >= 4).map(stem));
+
+  const missing = [];
+  const seen = new Set();
+  for (const kw of keywords) {
+    if (!kw || typeof kw !== 'string') continue;
+    const key = kw.toLowerCase().trim();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const kwNorm = normalize(kw).replace(/[^\w\s]/g, ' ').trim();
+    const parts = kwNorm.split(/\s+/).filter(Boolean);
+    if (parts.length === 0) continue;
+
+    // Present if every significant word is in the CV (exact or by stem)
+    const present = parts.every(p =>
+      cvNorm.includes(p) || (p.length >= 4 && cvStems.has(stem(p)))
+    );
+    if (!present) missing.push(kw);
+  }
+  return missing;
+}
+
+module.exports = { calculateATSScore, findMissingKeywords };

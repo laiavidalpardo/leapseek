@@ -228,6 +228,12 @@ textarea.job-input::placeholder { color: var(--muted); }
 .score-card.after .score-num { color: var(--green); }
 .kw-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .kw-tag { background: rgba(61,214,140,.1); color: var(--green); border: 1px solid rgba(61,214,140,.2); border-radius: 100px; font-size: 0.72rem; font-weight: 600; padding: 3px 11px; }
+.missing-hint { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.9rem; line-height: 1.5; }
+.kw-tag.selectable { background: transparent; color: var(--text); border: 1px dashed var(--border); cursor: pointer; user-select: none; transition: all .15s ease; }
+.kw-tag.selectable::before { content: '+ '; opacity: .6; }
+.kw-tag.selectable:hover { border-color: var(--green); color: var(--green); }
+.kw-tag.selectable.selected { background: rgba(61,214,140,.15); color: var(--green); border: 1px solid var(--green); }
+.kw-tag.selectable.selected::before { content: '✓ '; }
 
 /* ── CARTA ── */
 .carta-result { font-size: 0.875rem; line-height: 1.85; white-space: pre-wrap; color: var(--text); }
@@ -352,6 +358,12 @@ textarea.job-input::placeholder { color: var(--muted); }
         <div class="card">
           <h3>🔑 Palabras clave detectadas</h3>
           <div class="kw-tags" id="opt-kw-tags"></div>
+        </div>
+        <div class="card" id="opt-missing-card" style="display:none;">
+          <h3>➕ ¿Tienes experiencia con alguna de estas?</h3>
+          <p class="missing-hint">Están en la oferta pero no en tu CV. Marca solo las que tengas de verdad y las incorporamos (no inventamos nada).</p>
+          <div class="kw-tags" id="opt-missing-tags"></div>
+          <button class="btn-primary" id="opt-add-keywords" style="display:none; margin-top:1.1rem;">Añadir al CV y recalcular</button>
         </div>
         <div class="card">
           <h3>CV Optimizado</h3>
@@ -519,6 +531,13 @@ document.getElementById('opt-file').addEventListener('change', function() {
   }
 });
 
+let optJobText = '';
+let optInterviewLanguage = null;
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
 document.getElementById('opt-btn').addEventListener('click', async () => {
   hideErr('opt-error');
   if (!optFile) return showErr('opt-error', 'Sube tu CV en PDF o Word.');
@@ -526,16 +545,24 @@ document.getElementById('opt-btn').addEventListener('click', async () => {
   if (!jobText) return showErr('opt-error', 'Pega la descripción de la oferta.');
 
   const langValue = document.getElementById('lang-select').value;
-  const interviewLanguage = langValue === 'auto' ? null : langValue;
+  optInterviewLanguage = langValue === 'auto' ? null : langValue;
+  optJobText = jobText;
 
+  await runOptimize([]);
+});
+
+async function runOptimize(extraSkills) {
+  hideErr('opt-error');
   document.getElementById('opt-upload').style.display = 'none';
+  document.getElementById('opt-results').classList.remove('show');
   document.getElementById('opt-processing').classList.add('show');
 
   try {
     const formData = new FormData();
     formData.append('cv', optFile);
-    formData.append('jobText', jobText);
-    if (interviewLanguage) formData.append('interviewLanguage', interviewLanguage);
+    formData.append('jobText', optJobText);
+    if (optInterviewLanguage) formData.append('interviewLanguage', optInterviewLanguage);
+    if (extraSkills && extraSkills.length) formData.append('extraSkills', JSON.stringify(extraSkills));
 
     const res = await fetch(`${API_BASE}/optimize`, {
       method: 'POST',
@@ -547,8 +574,10 @@ document.getElementById('opt-btn').addEventListener('click', async () => {
 
     document.getElementById('opt-score-before').textContent = (data.score_antes   || 0) + '%';
     document.getElementById('opt-score-after').textContent  = (data.score_despues || 0) + '%';
-    document.getElementById('opt-kw-tags').innerHTML = (data.keywords || []).slice(0, 8).map(k => `<span class="kw-tag">${k}</span>`).join('');
+    document.getElementById('opt-kw-tags').innerHTML = (data.keywords || []).slice(0, 8).map(k => `<span class="kw-tag">${escapeHtml(k)}</span>`).join('');
     document.getElementById('opt-cv-text').textContent = data.cv_optimizado || '';
+
+    renderMissing(data.missing_keywords || []);
 
     document.getElementById('opt-processing').classList.remove('show');
     document.getElementById('opt-results').classList.add('show');
@@ -559,6 +588,35 @@ document.getElementById('opt-btn').addEventListener('click', async () => {
     document.getElementById('opt-upload').style.display = 'block';
     showErr('opt-error', err.message);
   }
+}
+
+function renderMissing(missing) {
+  const card   = document.getElementById('opt-missing-card');
+  const tags   = document.getElementById('opt-missing-tags');
+  const addBtn = document.getElementById('opt-add-keywords');
+
+  if (!missing || missing.length === 0) { card.style.display = 'none'; return; }
+
+  tags.innerHTML = missing.map(k =>
+    `<span class="kw-tag selectable" data-kw="${escapeHtml(k)}">${escapeHtml(k)}</span>`
+  ).join('');
+  addBtn.style.display = 'none';
+  card.style.display = 'block';
+
+  tags.querySelectorAll('.kw-tag.selectable').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('selected');
+      const anySelected = tags.querySelectorAll('.kw-tag.selected').length > 0;
+      addBtn.style.display = anySelected ? 'inline-flex' : 'none';
+    });
+  });
+}
+
+document.getElementById('opt-add-keywords').addEventListener('click', async () => {
+  const selected = Array.from(document.querySelectorAll('#opt-missing-tags .kw-tag.selected'))
+    .map(el => el.getAttribute('data-kw'));
+  if (selected.length === 0) return;
+  await runOptimize(selected);
 });
 
 document.getElementById('opt-download').addEventListener('click', () => {
@@ -571,10 +629,13 @@ document.getElementById('opt-download').addEventListener('click', () => {
 
 document.getElementById('opt-reset').addEventListener('click', () => {
   optFile = null;
+  optJobText = '';
+  optInterviewLanguage = null;
   document.getElementById('opt-file').value = '';
   document.getElementById('opt-file-chosen').classList.remove('show');
   document.getElementById('opt-job-text').value = '';
   document.getElementById('opt-results').classList.remove('show');
+  document.getElementById('opt-missing-card').style.display = 'none';
   document.getElementById('opt-upload').style.display = 'block';
   clearSharedResults();
 });

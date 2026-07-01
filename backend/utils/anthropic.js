@@ -54,7 +54,10 @@ REGLAS DE REDACCIÓN:
 - Cada bullet responde: ¿qué hice? ¿cómo? ¿qué resultado tuvo? — no solo lista tareas
 - Prohibido: "team player", "fast learner", "passionate about", "responsible for", "in charge of", "encargado de", "responsable de"
 - Usa el VOCABULARIO EXACTO de la oferta y las frases clave proporcionadas, no sinónimos aproximados
-- DISTRIBUCIÓN de keywords ATS: coloca las 5 más importantes en el RESUMEN, una keyword relevante en el PRIMER bullet de cada puesto, y el resto en HABILIDADES. Cada keyword una sola vez; si no encaja de forma natural, no la fuerces
+
+REGLA DE HONESTIDAD (LA MÁS IMPORTANTE, POR ENCIMA DE TODO LO DEMÁS):
+NO añadas una tecnología, herramienta, norma o metodología al CV solo porque aparezca en la oferta. Si el CV original NO da evidencia de que el candidato la conoce (ej: ASPICE, HIL, JIRA, Confluence, SAP, una norma concreta), NO la menciones: ni en el resumen, ni en habilidades, ni en los bullets. NUNCA inventes conocimiento de una herramienta o norma. Es MUCHO mejor un CV honesto con menos keywords que uno inflado que quede en evidencia en la entrevista. Las keywords de la oferta que el candidato no tenga se le preguntarán aparte al usuario después: tu trabajo NO es meterlas, es dejarlas fuera si no hay evidencia.
+- DISTRIBUCIÓN de keywords: usa SOLO las keywords ATS para las que el candidato tenga evidencia real en su CV (más las de la lista de EXPERIENCIA CONFIRMADA, si la hay). Esas repártelas en el RESUMEN, en HABILIDADES y en el primer bullet donde encajen de forma natural. Cada keyword una sola vez.
 - Varía la longitud y estructura de los bullets — no todos empiecen igual ni tengan la misma cadencia
 
 HUMANIZACIÓN — DOS NIVELES (crítico, el texto NO debe parecer escrito por IA):
@@ -181,7 +184,7 @@ async function generateCV(cvText, jobText, analysis, isPro, interviewLanguage = 
 
   const contextBlock = `CONTEXTO PRE-ANALIZADO (usa esto directamente, no lo re-analices):
 - Idioma de la oferta: ${language}
-- Keywords ATS (para la máquina — repártelas en resumen, habilidades y el primer bullet de cada puesto): ${keywords_ats.join(', ')}
+- Keywords ATS de la oferta (úsalas SOLO si el candidato tiene evidencia real de ellas en su CV; las que no tenga, DÉJALAS FUERA, no las inventes): ${keywords_ats.join(', ')}
 - Señales humanas (para el reclutador — úsalas sobre todo en la carta): ${keywords_humanas.join(', ')}
 - Frases clave a incorporar literalmente: ${key_phrases.join(', ')}
 

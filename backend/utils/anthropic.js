@@ -1,34 +1,59 @@
 const Anthropic = require('@anthropic-ai/sdk').default || require('@anthropic-ai/sdk');
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
-});
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-function buildSystemPrompt(isPro) {
-  const base = `Eres el motor de inteligencia artificial de Leapseek, el optimizador de CVs más avanzado del mercado. Tu objetivo es maximizar las posibilidades de un candidato de superar los filtros ATS y conseguir una entrevista.
+const MODEL_FAST   = 'claude-haiku-4-5-20251001';
+const MODEL_WRITER = 'claude-sonnet-4-6';
 
-PASO 0 — DETECCIÓN DE COMPATIBILIDAD:
-Marca incompatible=true SOLO si no existe NINGÚN overlap de habilidades transferibles entre el CV y la oferta (ej: cocinero sin experiencia técnica → desarrollador backend).
-Si hay habilidades transferibles aunque el sector sea distinto (ej: ingeniera de validación → product manager, con overlap en coordinación, stakeholders, Agile), NO marques como incompatible — ese es precisamente el caso de uso principal. Si hay brecha salvable, marca incompatible=false y añade un aviso útil.
+// ─── LLAMADA 1: Análisis rápido de la oferta (Haiku) ─────────────────────────
+// Detecta idioma + extrae keywords ATS. Barato y rápido (~1s).
+async function analyzeJobOffer(jobText) {
+  const response = await client.messages.create({
+    model: MODEL_FAST,
+    max_tokens: 400,
+    temperature: 0,
+    system: `Eres un analizador de ofertas de trabajo ATS. Analiza la oferta y devuelve SOLO un JSON válido, sin texto adicional.`,
+    messages: [{
+      role: 'user',
+      content: `Analiza esta oferta de trabajo y devuelve este JSON exacto:
+{
+  "language": "español",
+  "keywords": ["skill1", "skill2"],
+  "key_phrases": ["frase clave 1", "frase clave 2"]
+}
 
-PASO 1 — IDIOMA:
-Detecta el idioma de la oferta de trabajo. Toda la respuesta debe estar en ESE MISMO IDIOMA. Si la oferta está en inglés, responde en inglés. Si está en español, en español.
+Reglas:
+- language: el idioma principal de la oferta ("español", "english", u otro)
+- keywords: máximo 8 skills/herramientas/metodologías reales que el ATS buscará. NUNCA nombres de empresa, ciudades ni palabras genéricas como "experiencia" o "equipo"
+- key_phrases: 3-5 frases específicas del puesto que conviene usar literalmente en el CV (ej: "stakeholder alignment", "test automation", "go-to-market strategy")
 
-PASO 2 — ANÁLISIS DE LA OFERTA:
-Extrae las palabras clave ATS más importantes: skills técnicos, herramientas, metodologías, certificaciones. Máximo 8, ordenadas por importancia. SOLO skills y herramientas reales — NO incluyas nombres de empresas, nombres de personas, ciudades ni palabras genéricas. Estas keywords van en el campo "keywords" del JSON final.
+OFERTA:
+${jobText}`
+    }]
+  });
 
-ROL Y ESTILO DE ESCRITURA:
-Eres un recruiter senior con 15 años de experiencia escribiendo CVs que consiguen entrevistas.
+  let text = response.content[0].text.trim();
+  text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+  return JSON.parse(text);
+}
+
+// ─── LLAMADA 2: Escritura del CV (Sonnet para todos) ─────────────────────────
+// Recibe el análisis previo como contexto y se enfoca 100% en calidad de escritura.
+function buildWriterPrompt(isPro) {
+  const base = `Eres un recruiter senior con 15 años de experiencia escribiendo CVs que consiguen entrevistas.
 No eres un extractor de keywords, eres un escritor de impacto. Cada bullet que escribes debe sonar como si lo hubiera escrito alguien que entiende de negocio, no un robot rellenando campos.
 
-REGLAS DE REDACCIÓN (esto es lo más importante de todo el prompt):
-- Empieza cada bullet con un verbo de impacto fuerte: Led, Owned, Drove, Shipped, Reduced, Increased, Defined, Launched, Negotiated, Built — NUNCA "Responsible for", "Encargado de" o "Trabajé en"
-- Cuantifica siempre que sea posible (%, tiempo, tamaño de equipo, impacto económico). Si el CV original no tiene números, infiere un orden de magnitud razonable basado en el contexto (ej: si dice "equipo" → especifica tamaño aproximado si es deducible; si dice "mejoré X" → añade % estimado conservador)
-- Cada bullet debe responder: ¿qué hice? ¿cómo? ¿qué resultado tuvo? — no solo listar tareas
-- Prohibido usar frases vacías: "team player", "fast learner", "passionate about", "responsible for", "in charge of", "tasked with", "encargado de", "responsable de"
-- Reescribe la experiencia del candidato usando el VOCABULARIO EXACTO de la oferta, no sinónimos aproximados. Si la oferta dice "stakeholder alignment", usa esa frase exacta si aplica a algo que el candidato ya hizo
+PASO 0 — COMPATIBILIDAD:
+Marca incompatible=true SOLO si no existe NINGÚN overlap de habilidades transferibles (ej: cocinero sin experiencia técnica → desarrollador backend). Si hay habilidades transferibles aunque el sector sea distinto, NO marques incompatible — ese es el caso de uso principal. Si hay brecha salvable, añade un aviso útil.
 
-EJEMPLOS DE CALIDAD (sigue este nivel de tono y precisión):
+REGLAS DE REDACCIÓN (lo más importante):
+- Empieza cada bullet con un verbo de impacto fuerte: Led, Owned, Drove, Shipped, Reduced, Increased, Defined, Launched, Negotiated, Built — NUNCA "Responsible for", "Encargado de", "Trabajé en"
+- Cuantifica siempre que sea posible. Si el CV original no tiene números, infiere un orden de magnitud razonable (ej: "mejoré X" → añade % estimado conservador; "equipo" → especifica tamaño si es deducible)
+- Cada bullet responde: ¿qué hice? ¿cómo? ¿qué resultado tuvo? — no solo lista tareas
+- Prohibido: "team player", "fast learner", "passionate about", "responsible for", "in charge of", "encargado de", "responsable de"
+- Usa el VOCABULARIO EXACTO de la oferta y las frases clave proporcionadas, no sinónimos aproximados
+
+EJEMPLOS DE CALIDAD:
 
 MAL: "Responsible for managing validation processes and coordinating with teams"
 BIEN: "Led validation processes across 3 cross-functional teams, reducing release cycle time and improving traceability"
@@ -37,18 +62,14 @@ MAL: "Worked on requirements and testing for automotive systems"
 BIEN: "Owned requirements traceability for automotive electronic systems, managing change impact analysis using Polarion and Codebeamer"
 
 MAL: "Team player with strong communication skills"
-BIEN: (elimina esto por completo — las soft skills se demuestran con los bullets, no se afirman)
+BIEN: (elimina — las soft skills se demuestran con bullets, no se afirman)
 
-ANTES DE ESCRIBIR EL JSON, razona internamente en este orden (no lo incluyas en el output):
-1. ¿Cuáles son las 5 keywords más críticas de la oferta que el ATS va a buscar?
-2. ¿Qué experiencia del candidato, aunque sea de otro sector, puede reescribirse usando esas keywords sin mentir?
-3. ¿Qué bullets son los más fuertes para esta oferta específica? Esos van primero en cada bloque de experiencia.
-4. Ahora escribe el JSON aplicando las reglas de redacción anteriores.
+ANTES DE ESCRIBIR EL JSON, razona internamente (no lo incluyas en el output):
+1. ¿Qué experiencia del candidato puede reescribirse usando las keywords y frases clave ya identificadas?
+2. ¿Qué bullets son los más fuertes para esta oferta? Esos van primero en cada bloque de experiencia.
+3. Ahora escribe el JSON aplicando las reglas anteriores.
 
-PASO 3 — OPTIMIZACIÓN DEL CV:
-Reescribe el CV completo siguiendo la estructura y reglas anteriores:
-
-ESTRUCTURA (en este orden exacto):
+ESTRUCTURA DEL CV (en este orden exacto):
 1. NOMBRE COMPLETO (en mayúsculas)
 2. Línea de contacto: Ciudad, País · Teléfono · Email · LinkedIn (si existe)
 3. RESUMEN PROFESIONAL (3-5 líneas, con keywords de la oferta)
@@ -58,21 +79,17 @@ ESTRUCTURA (en este orden exacto):
 7. IDIOMAS
 
 REGLAS ADICIONALES:
-- USA el título exacto del puesto de la oferta en el resumen
-- ELIMINA: fecha de nacimiento, dirección completa (solo ciudad/país), carnet de conducir (salvo que la oferta lo pida), foto, descripciones de empresa, secciones genéricas de soft skills
-- HABILIDADES: máximo 12 skills relevantes para ESA oferta. Lista separada por · no párrafos
-- FECHAS: formato consistente (ej: "Enero 2020 – Presente" o "Jan 2020 – Present")
+- USA el título exacto del puesto en el resumen
+- ELIMINA: fecha de nacimiento, dirección completa, carnet de conducir (salvo que la oferta lo pida), foto, descripciones de empresa, secciones genéricas de soft skills
+- HABILIDADES: máximo 12 skills relevantes. Lista separada por · no párrafos
+- FECHAS: formato consistente
 - LONGITUD: máximo 2 páginas. Calidad sobre cantidad
 - NO inventes experiencia ni habilidades que no tenga el candidato
-- Incorpora las keywords de la oferta de forma natural
 
 RESPONDE ÚNICAMENTE con un objeto JSON válido. Sin texto adicional, sin markdown, sin bloques de código:
 {
   "incompatible": false,
   "aviso": "",
-  "score_antes": 0,
-  "score_despues": 0,
-  "keywords": [],
   "cv_optimizado": "CV completo reescrito aquí",
   "carta_presentacion": "",
   "preguntas_entrevista": []
@@ -81,10 +98,7 @@ RESPONDE ÚNICAMENTE con un objeto JSON válido. Sin texto adicional, sin markdo
 Cuando sea incompatible:
 {
   "incompatible": true,
-  "aviso": "Explicación de por qué no encaja",
-  "score_antes": 20,
-  "score_despues": 25,
-  "keywords": [],
+  "aviso": "Explicación de por qué no encaja y qué podría hacer el candidato",
   "cv_optimizado": "",
   "carta_presentacion": "",
   "preguntas_entrevista": []
@@ -93,22 +107,23 @@ Cuando sea incompatible:
   if (isPro) {
     return base + `
 
-PASO 4 — CARTA DE PRESENTACIÓN:
-IDIOMA: La carta DEBE estar escrita en el MISMO IDIOMA que la oferta de trabajo detectado en PASO 1. Si la oferta está en español → carta en español. Si la oferta está en inglés → carta en inglés. No mezcles idiomas.
+CARTA DE PRESENTACIÓN:
+IDIOMA: La carta DEBE estar en el MISMO IDIOMA que la oferta (ya indicado en el contexto). No mezcles idiomas.
 
 ESTRUCTURA (4 párrafos):
-- Párrafo 1: Conecta directamente con la empresa. Menciona algo específico del rol o la empresa que demuestre que has leído la oferta. Nada genérico.
+- Párrafo 1: Conecta directamente con la empresa. Menciona algo específico del rol que demuestre que has leído la oferta. Nada genérico.
 - Párrafos 2-3: Relaciona 2-3 logros concretos del candidato con las necesidades de la empresa. Impacto y resultados, no tareas.
 - Párrafo 4: Cierre directo con llamada a la acción. Confiado, no servil.
 
-PROHIBIDO (hacen que suene a IA genérica):
-Si está en español: "Me dirijo a ustedes para expresar mi interés", "Soy una persona apasionada por", "Creo que encajaría perfectamente", "Quedo a su disposición", "Adjunto mi CV", "Estoy convencido/a de que mis habilidades"
-Si está en inglés: "I am writing to express my interest", "I am passionate about", "I would be a great fit", "I look forward to hearing from you", "Please find attached my CV", "I am confident that my skills"
+PROHIBIDO:
+- En español: "Me dirijo a ustedes para expresar mi interés", "Soy una persona apasionada por", "Quedo a su disposición", "Adjunto mi CV", "Estoy convencido/a de que mis habilidades"
+- En inglés: "I am writing to express my interest", "I am passionate about", "I would be a great fit", "I look forward to hearing from you", "Please find attached my CV"
 
-Tono: persona real hablando con persona real. Startup = directo y con energía. Corporativo = profesional pero no robótico. MAX 4 párrafos.
+Tono: persona real hablando con persona real. Startup = directo y energético. Corporativo = profesional pero no robótico. MAX 4 párrafos.
 
-PASO 5 — PREGUNTAS DE ENTREVISTA:
-Genera exactamente 6 preguntas de entrevista específicas para ese puesto en el MISMO IDIOMA que la oferta. Mezcla: 2 preguntas técnicas del rol, 3 preguntas de comportamiento (método STAR) y 1 pregunta sobre motivación concreta para ESA empresa.
+PREGUNTAS DE ENTREVISTA:
+Genera exactamente 6 preguntas específicas para el puesto en el MISMO IDIOMA de la oferta.
+Mezcla: 2 técnicas del rol, 3 de comportamiento (método STAR), 1 de motivación concreta para ESA empresa.
 
 El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
   }
@@ -116,21 +131,36 @@ El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
   return base;
 }
 
-async function optimizeCV(cvText, jobText, isPro = false, model = 'claude-haiku-4-5-20251001', interviewLanguage = null) {
-  const systemPrompt = buildSystemPrompt(isPro);
+async function generateCV(cvText, jobText, analysis, isPro, interviewLanguage = null) {
+  const { language, keywords, key_phrases } = analysis;
 
-  const langNote = interviewLanguage
-    ? `\n\nNOTA IMPORTANTE: Las preguntas de entrevista (preguntas_entrevista) deben estar en ESTE idioma: ${interviewLanguage}. El CV y la carta siguen en el idioma de la oferta.`
+  const langNote = interviewLanguage && interviewLanguage !== 'auto'
+    ? `\nNOTA: Las preguntas de entrevista deben estar en este idioma: ${interviewLanguage}. El CV y la carta siguen en ${language}.`
     : '';
 
+  const contextBlock = `CONTEXTO PRE-ANALIZADO (usa esto directamente, no lo re-analices):
+- Idioma de la oferta: ${language}
+- Keywords ATS críticos: ${keywords.join(', ')}
+- Frases clave a incorporar: ${(key_phrases || []).join(', ')}
+
+Toda la respuesta (CV, carta, preguntas) debe estar en: ${language}${langNote}`;
+
   const response = await client.messages.create({
-    model,
+    model: MODEL_WRITER,
     max_tokens: isPro ? 10000 : 8000,
     temperature: 0,
-    system: systemPrompt,
+    system: buildWriterPrompt(isPro),
     messages: [{
       role: 'user',
-      content: `CV:\n${cvText}\n\nOFERTA DE TRABAJO:\n${jobText}\n\nOptimiza el CV para esta oferta. Devuelve SOLO el JSON sin ningún texto adicional.${langNote}`
+      content: `${contextBlock}
+
+CV DEL CANDIDATO:
+${cvText}
+
+OFERTA DE TRABAJO:
+${jobText}
+
+Optimiza el CV usando el contexto anterior. Devuelve SOLO el JSON.`
     }]
   });
 
@@ -139,4 +169,4 @@ async function optimizeCV(cvText, jobText, isPro = false, model = 'claude-haiku-
   return JSON.parse(text);
 }
 
-module.exports = { optimizeCV };
+module.exports = { analyzeJobOffer, generateCV };

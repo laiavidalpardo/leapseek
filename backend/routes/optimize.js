@@ -3,7 +3,7 @@ const multer = require('multer');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const jwt = require('jsonwebtoken');
-const { optimizeCV } = require('../utils/anthropic');
+const { analyzeJobOffer, generateCV } = require('../utils/anthropic');
 const { extractTextFromPDF } = require('../utils/pdfToText');
 const { extractTextFromWord } = require('../utils/wordToText');
 const { generateOptimizedDocx } = require('../utils/docxGenerator');
@@ -83,15 +83,11 @@ router.post('/', upload.single('cv'), async (req, res) => {
 
     // Determine plan from JWT
     let isPro = false;
-    let model = 'claude-haiku-4-5-20251001';
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       try {
         const decoded = jwt.verify(authHeader.split(' ')[1], process.env.JWT_SECRET);
-        if (decoded.plan === 'pro' || decoded.plan === 'elite') {
-          isPro = true;
-          model = 'claude-sonnet-4-6';
-        }
+        if (decoded.plan === 'pro' || decoded.plan === 'elite') isPro = true;
       } catch (_) {}
     }
 
@@ -107,20 +103,23 @@ router.post('/', upload.single('cv'), async (req, res) => {
       return res.status(400).json({ error: 'CV too short or invalid' });
     }
 
-    // Optimize CV with Anthropic
-    const result = await optimizeCV(cvText, jobText, isPro, model, interviewLanguage || null);
+    // LLAMADA 1 — Haiku: analiza la oferta (idioma + keywords)
+    const analysis = await analyzeJobOffer(jobText);
 
-    // Real mathematical ATS scores (override AI estimates)
-    // Keywords: keep AI's list — the AI correctly identifies skills vs company names
+    // LLAMADA 2 — Sonnet: escribe el CV con el contexto ya preparado
+    const result = await generateCV(cvText, jobText, analysis, isPro, interviewLanguage || null);
+
+    // Keywords: use the ones from Call 1 (Haiku analysis — correct, no company names)
+    result.keywords = Array.isArray(analysis.keywords)
+      ? analysis.keywords.filter(k => k && k.length > 1).slice(0, 8)
+      : [];
+
+    // ATS scores: real mathematical calculation
     if (result.cv_optimizado) {
       const atsScores = calculateATSScore(cvText, result.cv_optimizado, jobText);
       result.score_antes   = atsScores.score_antes;
       result.score_despues = atsScores.score_despues;
     }
-    // Cap and clean AI keywords (max 8, filter empty)
-    result.keywords = Array.isArray(result.keywords)
-      ? result.keywords.filter(k => k && k.length > 1).slice(0, 8)
-      : [];
 
     // Generate DOCX
     let docxBuffer;
@@ -139,7 +138,7 @@ router.post('/', upload.single('cv'), async (req, res) => {
       ...result,
       docx_base64: docxBuffer.toString('base64'),
       docx_filename: 'cv_optimizado.docx',
-      _model: model
+      _model: `haiku (análisis) + sonnet (escritura)`
     });
 
   } catch (err) {

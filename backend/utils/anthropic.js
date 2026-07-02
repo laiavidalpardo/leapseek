@@ -3,7 +3,7 @@ const Anthropic = require('@anthropic-ai/sdk').default || require('@anthropic-ai
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const MODEL_FAST   = 'claude-haiku-4-5-20251001';
-const MODEL_WRITER = 'claude-opus-4-8';
+const MODEL_WRITER = 'claude-sonnet-4-6';
 
 // ─── LLAMADA 1: Análisis rápido de la oferta (Haiku) ─────────────────────────
 // Detecta idioma + extrae keywords ATS. Barato y rápido (~1s).
@@ -90,6 +90,14 @@ ANTES DE ESCRIBIR EL JSON, razona internamente (no lo incluyas en el output):
 1. ¿Qué experiencia del candidato puede reescribirse usando las keywords y frases clave ya identificadas?
 2. ¿Qué bullets son los más fuertes para esta oferta? Esos van primero en cada bloque de experiencia.
 3. Ahora escribe el JSON aplicando las reglas anteriores.
+
+NIVEL DE REESCRITURA:
+No estás editando el CV, estás RECONSTRUYÉNDOLO para el rol objetivo.
+- Herramientas/tecnologías que no aparecen en la oferta ni aportan al rol objetivo: ELIMÍNALAS
+- La sección de skills se construye desde cero para el rol objetivo, no se copia del original
+- Cada bullet se reescribe preguntando: "¿qué le importa de esto al recruiter de ESTA oferta?" Si un detalle técnico no responde a eso, se generaliza o se elimina
+- Conserva siempre: empresas, fechas, títulos, logros cuantificados, idiomas
+- (Esto NO contradice la honestidad: reconstruir y reenfocar SÍ; inventar herramientas o experiencia que el candidato no tiene, NUNCA)
 
 ESTRUCTURA DEL CV (en este orden exacto):
 1. NOMBRE COMPLETO (en mayúsculas)

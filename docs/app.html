@@ -1051,7 +1051,8 @@ async function runOptimize(extraSkills) {
 
     document.getElementById('cv-text').textContent = resultData.cv_optimizado || '';
 
-    renderMissing(resultData.missing_keywords || []);
+    // "Añadir keywords" es de un solo uso: al regenerar con keywords confirmadas, no se vuelve a ofrecer.
+    renderMissing((extraSkills && extraSkills.length) ? [] : (resultData.missing_keywords || []));
 
     document.getElementById('processing').classList.remove('show');
     document.getElementById('results').classList.add('show');

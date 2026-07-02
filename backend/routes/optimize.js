@@ -156,7 +156,7 @@ router.post('/', upload.single('cv'), async (req, res) => {
       ...result,
       docx_base64: docxBuffer.toString('base64'),
       docx_filename: 'cv_optimizado.docx',
-      _model: `haiku (análisis) + sonnet (escritura)`
+      _model: `haiku (análisis) + opus 4.8 (escritura, temp 0.7)`
     });
 
   } catch (err) {

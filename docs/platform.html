@@ -577,7 +577,8 @@ async function runOptimize(extraSkills) {
     document.getElementById('opt-kw-tags').innerHTML = (data.keywords || []).slice(0, 8).map(k => `<span class="kw-tag">${escapeHtml(k)}</span>`).join('');
     document.getElementById('opt-cv-text').textContent = data.cv_optimizado || '';
 
-    renderMissing(data.missing_keywords || []);
+    // "Añadir keywords" es de un solo uso: al regenerar con keywords confirmadas, no se vuelve a ofrecer.
+    renderMissing((extraSkills && extraSkills.length) ? [] : (data.missing_keywords || []));
 
     document.getElementById('opt-processing').classList.remove('show');
     document.getElementById('opt-results').classList.add('show');

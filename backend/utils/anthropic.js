@@ -3,7 +3,7 @@ const Anthropic = require('@anthropic-ai/sdk').default || require('@anthropic-ai
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const MODEL_FAST   = 'claude-haiku-4-5-20251001';
-const MODEL_WRITER = 'claude-sonnet-4-6';
+const MODEL_WRITER = 'claude-opus-4-8';
 
 // ─── LLAMADA 1: Análisis rápido de la oferta (Haiku) ─────────────────────────
 // Detecta idioma + extrae keywords ATS. Barato y rápido (~1s).
@@ -170,6 +170,18 @@ El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
   return base;
 }
 
+// Garantía por código: en la carta NO deben aparecer guiones largos ni punto y coma
+// (son de los "tells" de IA más claros). Los sustituimos por coma, pase lo que pase.
+function cleanCoverPunctuation(text) {
+  if (!text) return text;
+  return text
+    .replace(/\s*—\s*/g, ', ')   // guion largo (em dash) → coma
+    .replace(/\s*–\s*/g, ', ')   // guion medio (en dash) → coma
+    .replace(/\s*;\s*/g, ', ')   // punto y coma → coma
+    .replace(/,\s*,/g, ',')       // limpia comas dobles que puedan quedar
+    .replace(/\s{2,}/g, ' ');
+}
+
 async function generateCV(cvText, jobText, analysis, isPro, interviewLanguage = null, extraSkills = []) {
   const { language, keywords_ats = [], keywords_humanas = [], key_phrases = [] } = analysis;
 
@@ -193,7 +205,7 @@ Toda la respuesta (CV, carta, preguntas) debe estar en: ${language}${langNote}${
   const response = await client.messages.create({
     model: MODEL_WRITER,
     max_tokens: isPro ? 10000 : 8000,
-    temperature: 0,
+    temperature: 0.7, // escritura: más alta = más natural y humana (temp 0 sonaba a robot)
     system: buildWriterPrompt(isPro),
     messages: [{
       role: 'user',
@@ -211,7 +223,14 @@ Optimiza el CV usando el contexto anterior. Devuelve SOLO el JSON.`
 
   let text = response.content[0].text.trim();
   text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
-  return JSON.parse(text);
+  const result = JSON.parse(text);
+
+  // La carta nunca debe llevar guiones largos ni punto y coma
+  if (result.carta_presentacion) {
+    result.carta_presentacion = cleanCoverPunctuation(result.carta_presentacion);
+  }
+
+  return result;
 }
 
 module.exports = { analyzeJobOffer, generateCV };

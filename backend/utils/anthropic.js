@@ -173,12 +173,13 @@ El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
 // (son de los "tells" de IA más claros). Los sustituimos por coma, pase lo que pase.
 function cleanCoverPunctuation(text) {
   if (!text) return text;
+  // OJO: usar [ \t] y NO \s, porque \s incluye saltos de línea y borraría los párrafos.
   return text
-    .replace(/\s*—\s*/g, ', ')   // guion largo (em dash) → coma
-    .replace(/\s*–\s*/g, ', ')   // guion medio (en dash) → coma
-    .replace(/\s*;\s*/g, ', ')   // punto y coma → coma
-    .replace(/,\s*,/g, ',')       // limpia comas dobles que puedan quedar
-    .replace(/\s{2,}/g, ' ');
+    .replace(/[ \t]*—[ \t]*/g, ', ')   // guion largo (em dash) → coma
+    .replace(/[ \t]*–[ \t]*/g, ', ')   // guion medio (en dash) → coma
+    .replace(/[ \t]*;[ \t]*/g, ', ')   // punto y coma → coma
+    .replace(/,[ \t]*,/g, ',')          // limpia comas dobles que puedan quedar
+    .replace(/[ \t]{2,}/g, ' ');        // colapsa espacios/tabs repetidos, NUNCA saltos de línea
 }
 
 async function generateCV(cvText, jobText, analysis, isPro, interviewLanguage = null, extraSkills = []) {

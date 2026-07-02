@@ -11,7 +11,6 @@ async function analyzeJobOffer(jobText) {
   const response = await client.messages.create({
     model: MODEL_FAST,
     max_tokens: 400,
-    temperature: 0,
     system: `Eres un analizador de ofertas de trabajo ATS. Analiza la oferta y devuelve SOLO un JSON válido, sin texto adicional.`,
     messages: [{
       role: 'user',
@@ -205,7 +204,7 @@ Toda la respuesta (CV, carta, preguntas) debe estar en: ${language}${langNote}${
   const response = await client.messages.create({
     model: MODEL_WRITER,
     max_tokens: isPro ? 10000 : 8000,
-    temperature: 0.7, // escritura: más alta = más natural y humana (temp 0 sonaba a robot)
+    // Sin 'temperature': Opus 4.8 lo tiene deprecado y usa su default natural (más humano que temp 0).
     system: buildWriterPrompt(isPro),
     messages: [{
       role: 'user',

@@ -9,6 +9,36 @@ const { extractTextFromWord } = require('../utils/wordToText');
 const { generateOptimizedDocx } = require('../utils/docxGenerator');
 const { calculateATSScore, findMissingKeywords } = require('../utils/scoring');
 
+// Aplana el CV estructurado a texto plano (para scoring, keywords que faltan y vista previa).
+function cvToText(cv) {
+  if (!cv || typeof cv !== 'object') return '';
+  const parts = [];
+  if (cv.name)    parts.push(cv.name);
+  if (cv.tagline) parts.push(cv.tagline);
+  if (cv.contact) parts.push(cv.contact);
+  if (cv.summary) parts.push('\n' + cv.summary);
+  if (Array.isArray(cv.experience)) {
+    for (const j of cv.experience) {
+      parts.push(`\n${j.role || ''} | ${j.company || ''} | ${j.dates || ''}`);
+      if (j.location) parts.push(j.location);
+      for (const b of (j.bullets || [])) parts.push('• ' + b);
+    }
+  }
+  if (Array.isArray(cv.skills)) {
+    parts.push('');
+    for (const s of cv.skills) {
+      if (s && s.category) parts.push(`${s.category}: ${s.items || ''}`);
+      else if (typeof s === 'string') parts.push(s);
+    }
+  }
+  if (Array.isArray(cv.education)) {
+    parts.push('');
+    for (const e of cv.education) parts.push(`${e.degree || ''} — ${e.school || ''} ${e.dates || ''}`.trim());
+  }
+  if (cv.languages) parts.push('\n' + cv.languages);
+  return parts.join('\n');
+}
+
 const router = express.Router();
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -121,6 +151,10 @@ router.post('/', upload.single('cv'), async (req, res) => {
     // LLAMADA 2 — Sonnet: escribe el CV con el contexto ya preparado (+ skills confirmados)
     const result = await generateCV(cvText, jobText, analysis, isPro, interviewLanguage || null, extraSkills);
 
+    // Texto plano del CV (para scoring, keywords que faltan y vista previa web).
+    // El formato bonito lo pinta el docx desde result.cv (estructurado).
+    result.cv_optimizado = cvToText(result.cv);
+
     // Keywords: use the ATS ones from Call 1 (Haiku analysis — correct, no company names)
     result.keywords = Array.isArray(analysis.keywords_ats)
       ? analysis.keywords_ats.filter(k => k && k.length > 1).slice(0, 8)
@@ -142,7 +176,7 @@ router.post('/', upload.single('cv'), async (req, res) => {
     // Generate DOCX
     let docxBuffer;
     try {
-      docxBuffer = await generateOptimizedDocx(result);
+      docxBuffer = await generateOptimizedDocx(result, analysis.language);
     } catch (err) {
       console.error('DOCX generation error:', err);
       return res.json({

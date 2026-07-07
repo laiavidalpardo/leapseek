@@ -8,12 +8,13 @@ if (process.env.NODE_ENV !== 'production') {
 const app = express();
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '2mb' })); // la entrevista envía transcripción + CV en JSON
 app.use(cors());
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/optimize', require('./routes/optimize'));
+app.use('/api/interview', require('./routes/interview'));
 // app.use('/api/usage', require('./routes/usage'));
 // app.use('/api/payments', require('./routes/payments'));
 

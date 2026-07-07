@@ -203,13 +203,17 @@ El JSON debe incluir carta_presentacion y preguntas_entrevista completos.`;
 // (son de los "tells" de IA más claros). Los sustituimos por coma, pase lo que pase.
 function cleanCoverPunctuation(text) {
   if (!text) return text;
-  // OJO: usar [ \t] y NO \s, porque \s incluye saltos de línea y borraría los párrafos.
+  // OJO: usar [ \t] y NO \s, porque \s incluye saltos de linea y borraria los parrafos.
   return text
-    .replace(/[ \t]*—[ \t]*/g, ', ')   // guion largo (em dash) → coma
-    .replace(/[ \t]*–[ \t]*/g, ', ')   // guion medio (en dash) → coma
-    .replace(/[ \t]*;[ \t]*/g, ', ')   // punto y coma → coma
-    .replace(/,[ \t]*,/g, ',')          // limpia comas dobles que puedan quedar
-    .replace(/[ \t]{2,}/g, ' ');        // colapsa espacios/tabs repetidos, NUNCA saltos de línea
+    .replace(/[ \t]*[\u2014\u2013][ \t]*/g, ', ') // guion largo/medio -> coma
+    .replace(/[ \t]*;[ \t]*/g, ', ')              // punto y coma -> coma
+    .replace(/[\u201C\u201D]/g, '"')              // comillas dobles tipograficas -> rectas
+    .replace(/[\u2018\u2019]/g, "'")              // comillas simples tipograficas -> rectas
+    .replace(/\u2026/g, '...')                     // puntos suspensivos
+    .replace(/\u200B/g, '')                        // espacio de ancho cero
+    .replace(/\u00A0/g, ' ')                       // espacio duro -> normal
+    .replace(/,[ \t]*,/g, ',')                     // limpia comas dobles
+    .replace(/[ \t]{2,}/g, ' ');                   // colapsa espacios/tabs, NUNCA saltos de linea
 }
 
 async function generateCV(cvText, jobText, analysis, isPro, interviewLanguage = null, extraSkills = []) {

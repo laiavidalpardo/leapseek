@@ -16,7 +16,16 @@ const LABELS = {
 };
 
 function clean(t) {
-  return (t || '').replace(/\*\*/g, '').replace(/`/g, '').trim();
+  return (t || '')
+    .replace(/\*\*/g, '').replace(/`/g, '')
+    // Normalizacion ATS: caracteres unicode que rompen los filtros -> ASCII seguro
+    .replace(/[\u2014\u2013]/g, '-')   // guion largo/medio -> guion normal
+    .replace(/[\u201C\u201D]/g, '"')   // comillas dobles tipograficas -> rectas
+    .replace(/[\u2018\u2019]/g, "'")   // comillas simples tipograficas -> rectas
+    .replace(/\u2026/g, '...')          // puntos suspensivos
+    .replace(/\u200B/g, '')             // espacio de ancho cero
+    .replace(/\u00A0/g, ' ')            // espacio duro
+    .trim();
 }
 
 function run(text, opts = {}) {

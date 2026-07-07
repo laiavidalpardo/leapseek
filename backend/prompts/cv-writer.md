@@ -82,7 +82,7 @@ RESPONDE ÚNICAMENTE con un objeto JSON válido. Sin texto adicional, sin markdo
     ],
     "languages": ""
   },
-  "carta_presentacion": "",
+  "cover": null,
   "preguntas_entrevista": []
 }
 
@@ -91,6 +91,6 @@ Cuando sea incompatible:
   "incompatible": true,
   "aviso": "Explicación de por qué no encaja y qué podría hacer el candidato",
   "cv": null,
-  "carta_presentacion": "",
+  "cover": null,
   "preguntas_entrevista": []
 }

@@ -7,6 +7,7 @@ const { analyzeJobOffer, generateCV } = require('../utils/anthropic');
 const { extractTextFromPDF } = require('../utils/pdfToText');
 const { extractTextFromWord } = require('../utils/wordToText');
 const { generateOptimizedDocx } = require('../utils/docxGenerator');
+const { generateCoverLetterDocx, coverToText } = require('../utils/coverLetterGenerator');
 const { calculateATSScore, findMissingKeywords } = require('../utils/scoring');
 
 // Aplana el CV estructurado a texto plano (para scoring, keywords que faltan y vista previa).
@@ -155,6 +156,11 @@ router.post('/', upload.single('cv'), async (req, res) => {
     // El formato bonito lo pinta el docx desde result.cv (estructurado).
     result.cv_optimizado = cvToText(result.cv);
 
+    // Carta: texto plano (para vista previa y copiar) desde las piezas estructuradas.
+    if (result.cover && typeof result.cover === 'object' && result.cv) {
+      result.carta_presentacion = coverToText(result.cover, result.cv.name, result.cv.contact);
+    }
+
     // Keywords: use the ATS ones from Call 1 (Haiku analysis — correct, no company names)
     result.keywords = Array.isArray(analysis.keywords_ats)
       ? analysis.keywords_ats.filter(k => k && k.length > 1).slice(0, 8)
@@ -173,7 +179,7 @@ router.post('/', upload.single('cv'), async (req, res) => {
       ? findMissingKeywords(result.cv_optimizado, result.keywords)
       : [];
 
-    // Generate DOCX
+    // Generate DOCX del CV
     let docxBuffer;
     try {
       docxBuffer = await generateOptimizedDocx(result, analysis.language);
@@ -185,11 +191,24 @@ router.post('/', upload.single('cv'), async (req, res) => {
       });
     }
 
+    // Generate DOCX de la carta (solo si hay carta estructurada — Pro)
+    let coverDocxBase64 = null;
+    if (result.cover && typeof result.cover === 'object' && result.cv) {
+      try {
+        const coverBuffer = await generateCoverLetterDocx(result.cover, result.cv.name, result.cv.contact);
+        coverDocxBase64 = coverBuffer.toString('base64');
+      } catch (err) {
+        console.error('Cover DOCX generation error:', err);
+      }
+    }
+
     // Return result with DOCX as base64
     res.json({
       ...result,
       docx_base64: docxBuffer.toString('base64'),
       docx_filename: 'cv_optimizado.docx',
+      cover_docx_base64: coverDocxBase64,
+      cover_docx_filename: 'carta_presentacion.docx',
       _model: `haiku (análisis) + sonnet 4.6 (escritura)`
     });
 

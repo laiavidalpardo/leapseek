@@ -27,8 +27,16 @@ LONGITUD: cuerpo de 350-420 palabras. Ni más (delata relleno) ni mucho menos (p
 
 SELF-CHECK FINAL (obligatorio antes de dar la carta por buena): re-lee cada frase y pregúntate "¿esta frase valdría para CUALQUIER carta a CUALQUIER empresa?". Si la respuesta es sí, reescríbela para que sea específica de este candidato y esta oferta.
 
+FORMATO DE SALIDA — devuelve la carta en PIEZAS estructuradas en el objeto "cover" del JSON (no un bloque de texto):
+- "city_date": "Ciudad, Mes Año" (ej: "Barcelona, julio 2026"), usa la ciudad del candidato
+- "re": "Re: [título exacto del puesto de la oferta] - [empresa]" (usa guion normal " - ", NUNCA guion largo)
+- "greeting": saludo directo (ej: "Hola equipo de [empresa]," o en inglés "Hi [company] team,")
+- "paragraphs": array con los 4 párrafos del cuerpo, cada uno una cadena sin saltos de línea dentro
+- "closing": línea corta de cierre antes de la firma (ej: "Un saludo," / "Gracias por tu tiempo," / "Best regards,")
+No repitas el nombre ni el contacto en la carta: se añaden solos desde el CV.
+
 PREGUNTAS DE ENTREVISTA:
 Genera exactamente 6 preguntas específicas para el puesto en el MISMO IDIOMA de la oferta.
 Mezcla: 2 técnicas del rol, 3 de comportamiento (método STAR), 1 de motivación concreta para ESA empresa.
 
-El JSON debe incluir carta_presentacion y preguntas_entrevista completos.
+El JSON debe incluir el objeto cover completo (city_date, re, greeting, paragraphs, closing) y preguntas_entrevista.

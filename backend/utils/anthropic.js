@@ -119,7 +119,14 @@ Optimiza el CV usando el contexto anterior. Devuelve SOLO el JSON.`
   text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
   const result = JSON.parse(text);
 
-  // La carta nunca debe llevar guiones largos ni punto y coma
+  // La carta nunca debe llevar guiones largos ni punto y coma (limpia las piezas de prosa)
+  if (result.cover && typeof result.cover === 'object') {
+    const c = result.cover;
+    if (Array.isArray(c.paragraphs)) c.paragraphs = c.paragraphs.map(cleanCoverPunctuation);
+    if (c.greeting) c.greeting = cleanCoverPunctuation(c.greeting);
+    if (c.closing)  c.closing  = cleanCoverPunctuation(c.closing);
+  }
+  // Compatibilidad: si por lo que sea llega como texto plano, límpialo igual
   if (result.carta_presentacion) {
     result.carta_presentacion = cleanCoverPunctuation(result.carta_presentacion);
   }

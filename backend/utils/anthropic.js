@@ -1,6 +1,16 @@
 const Anthropic = require('@anthropic-ai/sdk').default || require('@anthropic-ai/sdk');
+const fs = require('fs');
+const path = require('path');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+// Guía de voz anti-IA (copiada de career-ops/voice-dna.md). Fuente de verdad del estilo de escritura.
+let VOICE_DNA = '';
+try {
+  VOICE_DNA = fs.readFileSync(path.join(__dirname, '..', 'config', 'voice-dna.md'), 'utf8');
+} catch (e) {
+  console.error('No se pudo cargar voice-dna.md:', e.message);
+}
 
 const MODEL_FAST   = 'claude-haiku-4-5-20251001';
 const MODEL_WRITER = 'claude-sonnet-4-6';
@@ -68,6 +78,10 @@ Además: PROHIBIDO el guion largo (—) y el punto y coma (;). Usa comas, puntos
 NIVEL 2 (aplica SOLO a la carta, NUNCA al CV) — voz conversacional: contracciones, alguna frase que empiece por "Y" o "Pero", tono directo y natural. El CV va nítido y factual; la carta suena más humana.
 
 REGLA QUE MANDA SIEMPRE: la precisión gana al estilo. Nunca inventes ni adornes un hecho para que suene mejor.
+
+═══ GUÍA DE VOZ (fuente de verdad del estilo de escritura; aplícala con criterio, SOBRE TODO en la carta. Los términos en inglés valen igual para su equivalente en español) ═══
+${VOICE_DNA}
+═══ FIN GUÍA DE VOZ ═══
 
 En su lugar, sé directo y específico:
 - NO: "Leveraged cross-functional synergies to drive robust outcomes"
